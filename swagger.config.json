@@ -1,0 +1,5 @@
+{
+  "url": "http://124.71.179.166:8086/api/v2/api-docs?group=%E5%9F%BA%E7%A1%80%E7%89%88",
+  "outDir": "services",
+  "request": "import request from 'request';"
+}

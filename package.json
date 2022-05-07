@@ -1,0 +1,27 @@
+{
+  "name": "swagger-service-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "dtsgen  "
+  },
+  "author": "leezq",
+  "license": "ISC",
+  "dependencies": {
+    "@types/lodash": "^4.14.182",
+    "axios": "^0.27.2",
+    "colors": "^1.4.0",
+    "dtsgenerator": "^3.15.1",
+    "inquirer": "^8.2.4",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "prettier": "^2.6.2",
+    "rollup": "^2.72.0"
+  },
+  "files": [
+    "dist"
+  ]
+}
