@@ -13,7 +13,7 @@ const config = require(path.join(process.cwd(), './swagger.config.json'));
 async function run() {
   console.log(`读取json数据......`.yellow);
   console.log(`config......${JSON.stringify(config)}`.green);
-  const { url, outDir, request = `import request from 'umi-request';` } = config;
+  const { url, outDir, request = `import request from 'umi-request';`, filePathReg = '/(.*?)/' } = config;
   const apiPath = path.join(process.cwd(), outDir); //存放api文件地址
   if (!fs.existsSync(apiPath)) {
     // mkdir -p
@@ -22,23 +22,24 @@ async function run() {
   const res = await getData(url);
   const { paths, basePath } = res.data;
   let pathGroups = {};
-  _.map(paths, (item, key) => {
-    if (Object.keys(pathGroups).includes(key.split('/')[1])) {
-      pathGroups[key.split('/')[1]].push({
-        url: key,
+  _.map(paths, (item, urlPath) => {
+    const groupKey = urlPath.match(new RegExp(filePathReg))[1] || 'default';
+    if (Object.keys(pathGroups).includes(groupKey)) {
+      pathGroups[groupKey].push({
+        url: urlPath,
         apiInfo: item,
       });
     } else {
-      pathGroups[key.split('/')[1]] = [{
-        url: key,
+      pathGroups[groupKey] = [{
+        url: urlPath,
         apiInfo: item,
       }];
     }
   });
 
 
-  _.map(pathGroups, (pathGroup, key) => {
-    const fileName = key + '.ts';
+  _.map(pathGroups, (pathGroup, groupKey) => {
+    const fileName = groupKey + '.ts';
 
     let content = `
 /// <reference path = "api.d.ts" />
@@ -47,7 +48,6 @@ ${request}
     pathGroup.forEach((item) => {
       const { apiInfo, url } = item;
 
-      // console.log(222, url);
       const method = Object.keys(apiInfo)[0];
       let { operationId, summary, parameters, consumes } = apiInfo[method];
 
@@ -77,7 +77,7 @@ export async function ${operationId}(
   params: ${paramsType},
   extra?: { [key: string]: any },
 ): Promise<${responseType}> {
-  return request('${basePath === '/' ? '' : basePath}${url}', {
+  return request('${basePath}${url}', {
     method: '${method.toUpperCase()}',
     data: params,
     ...(extra || {}),

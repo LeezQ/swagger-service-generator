@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "build": "rollup src/index.js -o dist/index.js",
     "dev": "dtsgen  "
   },
   "author": "leezq",
