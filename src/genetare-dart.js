@@ -187,18 +187,25 @@ function generateParamProperty(property) {
 }
 
 function generateModelProperty(property, name, required) {
-  let { type, originalRef, description } = property;
+  let { type, originalRef, description, items = {} } = property;
   const _in = property.in || 'query';
   if (_in === 'body') {
     type = schema.type;
   }
+  console.log(name, JSON.stringify(property));
 
   let res = ``;
   let requiredFlag = (name === 'success') || required.includes(name) ? true : false;
   let requiredTxt = requiredFlag ? '' : '?';
+
+
   if (!type) {
     res = `${originalRef}${requiredTxt} ${name};`;
   } else {
+    // 如果是数组, 则需要添加泛型
+    if (type === 'array') {
+      originalRef = items.originalRef;
+    }
     if (originalRef) {
       res = `${generateDartType(type)}<${originalRef}>${requiredTxt} ${name};`;
     } else {
