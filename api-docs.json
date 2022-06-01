@@ -1,0 +1,4477 @@
+{
+  "swagger": "2.0",
+  "info": { "version": "1.0" },
+  "host": "api.pone.duomimall.com",
+  "basePath": "/",
+  "tags": [
+    { "name": "APP接口", "description": "App Controller" },
+    { "name": "任务接口", "description": "Task Controller" },
+    { "name": "体验券接口", "description": "Coupon Controller" },
+    { "name": "商品接口", "description": "Product Controller" },
+    { "name": "支付接口", "description": "Payment Controller" },
+    { "name": "活动接口", "description": "Activity Controller" },
+    { "name": "用户接口", "description": "User Controller" },
+    { "name": "监控接口", "description": "Monitor Controller" },
+    { "name": "短信接口", "description": "Sms Controller" },
+    { "name": "行情接口", "description": "Quote Controller" },
+    { "name": "订单接口", "description": "Order Controller" },
+    { "name": "设置接口", "description": "Sys Controller" },
+    { "name": "资金接口", "description": "Fund Controller" },
+    { "name": "运营接口", "description": "Operate Controller" },
+    { "name": "风控接口", "description": "Risk Controller" }
+  ],
+  "paths": {
+    "/api/activity/newUser/guide": {
+      "get": {
+        "tags": ["活动接口"],
+        "summary": "新手引导-不需要登录态",
+        "operationId": "newUserGuideWithNoAuthUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«NewUserGuideVO»",
+              "originalRef": "SingleResponse«NewUserGuideVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/activity/oauth/newUser/guide": {
+      "get": {
+        "tags": ["活动接口"],
+        "summary": "新手引导",
+        "operationId": "newUserGuideUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«NewUserGuideVO»",
+              "originalRef": "SingleResponse«NewUserGuideVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/app/active": {
+      "get": {
+        "tags": ["APP接口"],
+        "summary": "激活",
+        "operationId": "activeUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          { "name": "brand", "in": "query", "description": "brand", "required": false, "type": "string" },
+          { "name": "channelType", "in": "query", "description": "channelType", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "clientType",
+            "in": "query",
+            "description": "clientType",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          { "name": "idfa", "in": "query", "description": "idfa", "required": false, "type": "string" },
+          { "name": "model", "in": "query", "description": "model", "required": false, "type": "string" },
+          { "name": "oaid", "in": "query", "description": "oaid", "required": false, "type": "string" },
+          { "name": "os_version", "in": "query", "description": "os_version", "required": false, "type": "string" },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" },
+          { "name": "uuid", "in": "query", "description": "uuid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/app/init": {
+      "get": {
+        "tags": ["APP接口"],
+        "summary": "初始化",
+        "operationId": "initUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«AppInitVO»", "originalRef": "SingleResponse«AppInitVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/coupon/oauth/exchange": {
+      "post": {
+        "tags": ["体验券接口"],
+        "summary": "兑换体验券",
+        "operationId": "exchangeUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ExchangeCmd", "originalRef": "ExchangeCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/coupon/oauth/list": {
+      "get": {
+        "tags": ["体验券接口"],
+        "summary": "查询用户的所有体验券",
+        "operationId": "listCouponUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态 0-未使用；1-已使用；2-已过期",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«CouponVO»", "originalRef": "MultiResponse«CouponVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/coupon/oauth/list/exchange": {
+      "get": {
+        "tags": ["体验券接口"],
+        "summary": "查询可兑换的体验券",
+        "operationId": "listExchangeUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«PromotionVO»",
+              "originalRef": "MultiResponse«PromotionVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/fund/oauth/balance": {
+      "get": {
+        "tags": ["资金接口"],
+        "summary": "查询余额",
+        "operationId": "queryBalanceUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«BalanceVO»", "originalRef": "SingleResponse«BalanceVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/fund/oauth/contract/history": {
+      "get": {
+        "tags": ["资金接口"],
+        "summary": "查询收支记录",
+        "operationId": "queryPaymentRecordUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "currentPage",
+            "description": "当前页码",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "name": "month", "in": "query", "description": "年月", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "pageSize",
+            "description": "每页条数",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "type",
+            "description": "费项类型 WITHDRAW-提现；RECHARGE-充值；",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«PaymentRecordVO»",
+              "originalRef": "MultiResponse«PaymentRecordVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/fund/oauth/password/create": {
+      "post": {
+        "tags": ["资金接口"],
+        "summary": "首次设置资金密码",
+        "operationId": "passwordCreateUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/PasswordCreateCmd", "originalRef": "PasswordCreateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/fund/oauth/password/reset": {
+      "post": {
+        "tags": ["资金接口"],
+        "summary": "重置资金密码",
+        "operationId": "passwordResetUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/PasswordResetCmd", "originalRef": "PasswordResetCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/fund/oauth/password/update": {
+      "post": {
+        "tags": ["资金接口"],
+        "summary": "修改资金密码",
+        "operationId": "passwordUpdateUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/PasswordUpdateCmd", "originalRef": "PasswordUpdateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/monitor/appLog/collect": {
+      "post": {
+        "tags": ["监控接口"],
+        "summary": "APP日志收集",
+        "operationId": "appLogCollectUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AppLogCollectCmd", "originalRef": "AppLogCollectCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/app/lastVersion": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "客户端最新版本",
+        "operationId": "queryLastVersionUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "clientType",
+            "description": "客户端类型 1-安卓；2-IOS",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "channelType",
+            "description": "channelType",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«AppVersionVO»",
+              "originalRef": "SingleResponse«AppVersionVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/banner": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "banner位",
+        "operationId": "queryBannerUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "positionId",
+            "description": "位置ID 1-APP首页；2-零售商城首页",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«BannerVO»", "originalRef": "MultiResponse«BannerVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/economicNews/calendar": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "财经日历",
+        "operationId": "queryEconomicCalendarsUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "date",
+            "description": "日历日期 yyyy-MM-dd",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«EconomicCalendarVO»",
+              "originalRef": "MultiResponse«EconomicCalendarVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/economicNews/flash": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "实时资讯",
+        "operationId": "queryEconomicFlashsUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "dateTime",
+            "description": "查询时间 yyyy-MM-dd HH:mm:ss",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«EconomicFlashVO»",
+              "originalRef": "MultiResponse«EconomicFlashVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/notice": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "公告",
+        "operationId": "queryNoticeUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«NoticeVO»", "originalRef": "MultiResponse«NoticeVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/notify/day": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "每日通知",
+        "operationId": "queryNotifyDayUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«NotifyDayVO»",
+              "originalRef": "SingleResponse«NotifyDayVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/orderAmountRank": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "订购金额排行榜",
+        "operationId": "queryOrderAmountRankUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«OrderAmountRankVO»",
+              "originalRef": "MultiResponse«OrderAmountRankVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/operate/sellRank": {
+      "get": {
+        "tags": ["运营接口"],
+        "summary": "盈利排行榜",
+        "operationId": "querySellRankUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«SellRankVO»", "originalRef": "MultiResponse«SellRankVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/good": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "首页牛单广场",
+        "operationId": "queryGoodOrderUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«GoodOrderVO»",
+              "originalRef": "MultiResponse«GoodOrderVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/close": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "同步退订",
+        "operationId": "closeContractOrderUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ContractOrderCloseCmd", "originalRef": "ContractOrderCloseCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/create": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "同步订购",
+        "operationId": "createContractOrderUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ContractOrderCreateCmd", "originalRef": "ContractOrderCreateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/history": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "历史订单记录",
+        "operationId": "contractHistoryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "currentPage",
+            "description": "当前页码",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "in": "body", "name": "month", "description": "年月", "required": true, "schema": { "type": "string" } },
+          {
+            "in": "body",
+            "name": "pageSize",
+            "description": "每页条数",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«OrderContractVO»",
+              "originalRef": "MultiResponse«OrderContractVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/holding": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "持仓列表",
+        "operationId": "contractHoldingUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«OrderContractVO»",
+              "originalRef": "MultiResponse«OrderContractVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/order/delivery": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "提货页面",
+        "operationId": "queryContractOrderDeliveryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "orderNum",
+            "description": "订单号",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ContractOrderDeliveryVO»",
+              "originalRef": "SingleResponse«ContractOrderDeliveryVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "提货",
+        "operationId": "contractOrderDeliveryUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ContractOrderDeliveryCmd", "originalRef": "ContractOrderDeliveryCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/contract/update": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "修改订购订单",
+        "operationId": "updateContractOrderUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/ContractOrderUpdateCmd", "originalRef": "ContractOrderUpdateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/delivery/confirmReceived": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "确认收货",
+        "operationId": "confirmReceivedUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeliveryConfirmReceivedCmd",
+              "originalRef": "DeliveryConfirmReceivedCmd"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/limit/cancel": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "同步撤单",
+        "operationId": "cancelLimitOrderUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/LimitOrderCancelCmd", "originalRef": "LimitOrderCancelCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/limit/create": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "同步挂单",
+        "operationId": "createLimitOrderUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/LimitOrderCreateCmd", "originalRef": "LimitOrderCreateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/limit/history": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "挂单历史记录",
+        "operationId": "limitHistoryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "currentPage",
+            "description": "当前页码",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "description": "年月 可空，为空默认查询所有数据",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "pageSize",
+            "description": "每页条数",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«OrderLimitVO»",
+              "originalRef": "MultiResponse«OrderLimitVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/limit/list": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "挂单列表",
+        "operationId": "limitListUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«OrderLimitVO»",
+              "originalRef": "MultiResponse«OrderLimitVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/newUserCoupon/create": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "新手券下单",
+        "operationId": "createOrderByNewUserCouponUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NewUserCouponOrderCreateCmd",
+              "originalRef": "NewUserCouponOrderCreateCmd"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/retail/create/multi": {
+      "post": {
+        "tags": ["订单接口"],
+        "summary": "同步零售(多商品)",
+        "operationId": "createRetailOrderMultiProductUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetailOrderCreateMultiProductCmd",
+              "originalRef": "RetailOrderCreateMultiProductCmd"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/retail/list": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "查询提货单",
+        "operationId": "queryDeliveryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "订单状态 1-待发货；2-待收货；3-已完成",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«DeliveryOrderVO»",
+              "originalRef": "MultiResponse«DeliveryOrderVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/order/oauth/retail/order/confirm": {
+      "get": {
+        "tags": ["订单接口"],
+        "summary": "零售商城确认订单页面",
+        "operationId": "queryRetailOrderConfirmUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«RetailOrderConfirmVO»",
+              "originalRef": "SingleResponse«RetailOrderConfirmVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/bank/list": {
+      "get": {
+        "tags": ["支付接口"],
+        "summary": "查询银行列表",
+        "operationId": "querySupportedBankUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "payCode",
+            "in": "query",
+            "description": "支付渠道（提现时不用传）",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "payType",
+            "description": "渠道类型 1-充值 2-提现",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«SupportedBankVO»",
+              "originalRef": "MultiResponse«SupportedBankVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/card/bindingInfo": {
+      "get": {
+        "tags": ["支付接口"],
+        "summary": "查询用户绑卡信息（充值和提现）",
+        "operationId": "queryCardBindingInfoUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "payCode",
+            "in": "query",
+            "description": "支付渠道（提现时不用传）",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "payType",
+            "description": "渠道类型 1-充值 2-提现",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«CardBindingInfoVO»",
+              "originalRef": "SingleResponse«CardBindingInfoVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/card/unbind": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "解绑（充值和提现）",
+        "operationId": "cardUnbindUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CardUnbindCmd", "originalRef": "CardUnbindCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/cashierPay": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "收银台支付",
+        "operationId": "cashierPayUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/CashierPayCmd", "originalRef": "CashierPayCmd" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«CashierPayVO»",
+              "originalRef": "SingleResponse«CashierPayVO»"
+            }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/channel": {
+      "get": {
+        "tags": ["支付接口"],
+        "summary": "支付渠道列表",
+        "operationId": "listChannelUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«PaymentChannelVO»",
+              "originalRef": "MultiResponse«PaymentChannelVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/fastPay/bind/apply": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "杉德快捷支付-绑卡签约申请",
+        "operationId": "fastBindApplyUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/FastBindApplyCmd", "originalRef": "FastBindApplyCmd" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«FastBindApplylVO»",
+              "originalRef": "SingleResponse«FastBindApplylVO»"
+            }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/fastPay/bind/confirm": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "杉德快捷支付-绑卡签约确认",
+        "operationId": "fastBindConfirmUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/FastBindConfirmCmd", "originalRef": "FastBindConfirmCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/fastPay/pay/apply": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "杉德快捷支付-支付申请",
+        "operationId": "fastPayApplyUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/FastPayApplyCmd", "originalRef": "FastPayApplyCmd" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«FastPayApplylVO»",
+              "originalRef": "SingleResponse«FastPayApplylVO»"
+            }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/fastPay/pay/confirm": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "杉德快捷支付-支付确认",
+        "operationId": "fastPayConfirmUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/FastPayConfirmCmd", "originalRef": "FastPayConfirmCmd" }
+          },
+          { "name": "oaid", "in": "query", "description": "oaid", "required": false, "type": "string" },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/superviseCard": {
+      "get": {
+        "tags": ["支付接口"],
+        "summary": "查询监护行信息",
+        "operationId": "superviseCardUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«SuperviseCardVO»",
+              "originalRef": "SingleResponse«SuperviseCardVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/verify/code/resend": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "重发短信验证码（支付）",
+        "operationId": "verifyCodeResendUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/VerifyCodeResendCmd", "originalRef": "VerifyCodeResendCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/withdraw": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "提现",
+        "operationId": "withdrawUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/WithdrawCmd", "originalRef": "WithdrawCmd" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«WithdrawVO»",
+              "originalRef": "SingleResponse«WithdrawVO»"
+            }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/payment/oauth/withdraw/card/bind": {
+      "post": {
+        "tags": ["支付接口"],
+        "summary": "提现绑卡",
+        "operationId": "withdrawBindCardUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/WithdrawBindCardCmd", "originalRef": "WithdrawBindCardCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/coupon": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "订购商品兑换券",
+        "operationId": "couponUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "skuId",
+            "description": "商品skuID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ProductContractCouponVO»",
+              "originalRef": "SingleResponse«ProductContractCouponVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/product/detail": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "订购商品详情页",
+        "operationId": "contractProductDetailUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contract",
+            "description": "行情编号",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ProductContractDetailVO»",
+              "originalRef": "SingleResponse«ProductContractDetailVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/sku": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "订购商品规格列表",
+        "operationId": "skuUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contract",
+            "description": "行情编号",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«ProductContractSkuVO»",
+              "originalRef": "MultiResponse«ProductContractSkuVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/sku/limit": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "查询sku的止盈止损限制",
+        "operationId": "querySkuLimitUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contractType",
+            "description": "订购方式 1-现金；2-券；3-积分",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "name": "couponId", "in": "query", "description": "券ID", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "productId",
+            "description": "商品ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ProductContractLimitVO»",
+              "originalRef": "SingleResponse«ProductContractLimitVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/spu": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "订购商品类别列表",
+        "operationId": "spuUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«ProductContractSpuVO»",
+              "originalRef": "MultiResponse«ProductContractSpuVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/contract/spuAndSku": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "订购商品及sku列表",
+        "operationId": "spuAndSkuUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«ProductContractSpuVO»",
+              "originalRef": "MultiResponse«ProductContractSpuVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/oauth/cart": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "查询购物车",
+        "operationId": "retailCartUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«RetailCartVO»",
+              "originalRef": "MultiResponse«RetailCartVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/oauth/cart/number/add": {
+      "post": {
+        "tags": ["商品接口"],
+        "summary": "购物车增加数量",
+        "operationId": "cartAddNumberUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RetailCartChangeNumberCmd", "originalRef": "RetailCartChangeNumberCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/oauth/cart/number/sub": {
+      "post": {
+        "tags": ["商品接口"],
+        "summary": "购物车减少数量",
+        "operationId": "cartSubNumberUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RetailCartChangeNumberCmd", "originalRef": "RetailCartChangeNumberCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/oauth/cart/product/add": {
+      "post": {
+        "tags": ["商品接口"],
+        "summary": "加入购物车",
+        "operationId": "cartAddProductUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/RetailCartAddProductCmd", "originalRef": "RetailCartAddProductCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/oauth/cart/product/delete": {
+      "post": {
+        "tags": ["商品接口"],
+        "summary": "购物车删除",
+        "operationId": "cartDeleteProductUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RetailCartDeleteProductCmd",
+              "originalRef": "RetailCartDeleteProductCmd"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/retail/detail": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "零售商品详情",
+        "operationId": "retailDetailUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "productId",
+            "description": "商品ID",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ProductRetailVO»",
+              "originalRef": "SingleResponse«ProductRetailVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/retail/home": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "零售商城首页",
+        "operationId": "retailHomeUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«RetailHomeVO»",
+              "originalRef": "SingleResponse«RetailHomeVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/retail/products": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "零售商城所有商品列表",
+        "operationId": "retailProductsUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«ProductRetailVO»",
+              "originalRef": "MultiResponse«ProductRetailVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/product/sku/product/detail": {
+      "get": {
+        "tags": ["商品接口"],
+        "summary": "单个订购商品详情页",
+        "operationId": "productSkuDeliveryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          { "in": "body", "name": "skuId", "description": "skuId", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«ProductContractDeliveryVO»",
+              "originalRef": "SingleResponse«ProductContractDeliveryVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/quote/kline": {
+      "get": {
+        "tags": ["行情接口"],
+        "summary": "k线",
+        "operationId": "klineUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contract",
+            "description": "行情编号",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          { "in": "body", "name": "type", "description": "K线类型", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«KlineVO»", "originalRef": "MultiResponse«KlineVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/quote/klineNew": {
+      "get": {
+        "tags": ["行情接口"],
+        "summary": "分时线(新)",
+        "operationId": "klineQryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contract",
+            "description": "行情编号",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "type",
+            "description": "K线类型 今日：ONE_MINUTE 近5日：FIVE_MINUTE 近30日：THIRTY_MINUTE",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«TimelineVO»",
+              "originalRef": "SingleResponse«TimelineVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/quote/timeline": {
+      "get": {
+        "tags": ["行情接口"],
+        "summary": "分时线",
+        "operationId": "timelineUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "contract",
+            "description": "行情编号",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«TimelineVO»",
+              "originalRef": "SingleResponse«TimelineVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/risk/oauth/faceVerification/getResult": {
+      "get": {
+        "tags": ["风控接口"],
+        "summary": "人脸识别 查询结果",
+        "operationId": "getFaceVerificationResultUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "verificationToken",
+            "description": "查询标识",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«VerificationResultVO»",
+              "originalRef": "SingleResponse«VerificationResultVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/risk/oauth/faceVerification/getToken": {
+      "get": {
+        "tags": ["风控接口"],
+        "summary": "人脸识别 获取token",
+        "operationId": "getFaceVerificationTokenUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "metaInfo",
+            "description": "metainfo环境参数",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«VerificationTokenVO»",
+              "originalRef": "SingleResponse«VerificationTokenVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/risk/oauth/getUserRiskManageStatus": {
+      "get": {
+        "tags": ["风控接口"],
+        "summary": "查询当前用户是否处于风控",
+        "operationId": "getUserRiskManageStatusUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«UserRiskVO»",
+              "originalRef": "SingleResponse«UserRiskVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/sms/oauth/verify/code/send": {
+      "post": {
+        "tags": ["短信接口"],
+        "summary": "获取手机验证码(登录态)",
+        "operationId": "sendCodeByTokenUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/SendCodeByTokenCmd", "originalRef": "SendCodeByTokenCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/sms/verify/code/send": {
+      "post": {
+        "tags": ["短信接口"],
+        "summary": "获取手机验证码(未登录)",
+        "operationId": "sendCodeByMobileUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/SendCodeByMobileCmd", "originalRef": "SendCodeByMobileCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/sys/querySysConfig": {
+      "get": {
+        "tags": ["设置接口"],
+        "summary": "查询用户设置",
+        "operationId": "querySysConfigUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«SysConfigVO»",
+              "originalRef": "SingleResponse«SysConfigVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/sys/switchRankShow": {
+      "get": {
+        "tags": ["设置接口"],
+        "summary": "切换排行榜显示设置",
+        "operationId": "switchRankShowUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«SysConfigVO»",
+              "originalRef": "SingleResponse«SysConfigVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/task/oauth/getReward": {
+      "post": {
+        "tags": ["任务接口"],
+        "summary": "领取奖励",
+        "operationId": "getRewardUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "getRewardCmd",
+            "description": "getRewardCmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/GetRewardCmd", "originalRef": "GetRewardCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/task/oauth/list": {
+      "get": {
+        "tags": ["任务接口"],
+        "summary": "任务列表",
+        "operationId": "listUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«TaskGroupVO»",
+              "originalRef": "MultiResponse«TaskGroupVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/bonus/record/query": {
+      "get": {
+        "tags": ["用户接口"],
+        "summary": "奖励金明细",
+        "operationId": "queryBonusRecordUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          { "name": "date", "in": "query", "description": "查询月份 yyyy-MM", "required": true, "type": "string" },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "奖励金类型 0-出账，1-入账",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«UserBonusRecordVO»",
+              "originalRef": "MultiResponse«UserBonusRecordVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/loginByCode": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "用户登录(验证码)",
+        "operationId": "loginByCodeUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserLoginByCodeCmd", "originalRef": "UserLoginByCodeCmd" }
+          },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«LoginVO»", "originalRef": "SingleResponse«LoginVO»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/loginByPassword": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "用户登录(密码)",
+        "operationId": "loginByPasswordUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserLoginByPasswordCmd", "originalRef": "UserLoginByPasswordCmd" }
+          },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«LoginVO»", "originalRef": "SingleResponse«LoginVO»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/address/create": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "新增地址",
+        "operationId": "addressCreateUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AddressCreateCmd", "originalRef": "AddressCreateCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/address/delete": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "删除地址",
+        "operationId": "addressDeleteUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AddressDeleteCmd", "originalRef": "AddressDeleteCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/address/edit": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "编辑地址",
+        "operationId": "addressEditUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/AddressEditCmd", "originalRef": "AddressEditCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/address/query": {
+      "get": {
+        "tags": ["用户接口"],
+        "summary": "查询地址",
+        "operationId": "addressQueryUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "isDefault",
+            "in": "query",
+            "description": "默认地址 0-非默认；1-默认",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/MultiResponse«AddressVO»", "originalRef": "MultiResponse«AddressVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/cancelAccount": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "注销账号",
+        "operationId": "cancelAccountUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserCancelAccountCmd", "originalRef": "UserCancelAccountCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/info": {
+      "get": {
+        "tags": ["用户接口"],
+        "summary": "获取登录用户信息",
+        "operationId": "getLoginUserInfoUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«UserVO»", "originalRef": "SingleResponse«UserVO»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/logout": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "退出登录",
+        "operationId": "logoutUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/randomNickName": {
+      "get": {
+        "tags": ["用户接口"],
+        "summary": "随机获取昵称",
+        "operationId": "queryRandomNickNameUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«RandomNickNameVO»",
+              "originalRef": "SingleResponse«RandomNickNameVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/updateNickAndHeadPic": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "修改头像和昵称",
+        "operationId": "updateNickAndHeadPicUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserNickAndHeadPicCmd", "originalRef": "UserNickAndHeadPicCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/oauth/userHeadPicUrl": {
+      "get": {
+        "tags": ["用户接口"],
+        "summary": "获取头像库",
+        "operationId": "queryUserHeadPicUrlUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiResponse«UserHeadPicVO»",
+              "originalRef": "MultiResponse«UserHeadPicVO»"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "用户注册(验证码)",
+        "operationId": "registerUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          { "name": "channelType", "in": "query", "description": "channelType", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "clientType",
+            "in": "query",
+            "description": "clientType",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserRegisterCmd", "originalRef": "UserRegisterCmd" }
+          },
+          { "name": "idfa", "in": "query", "description": "idfa", "required": false, "type": "string" },
+          { "name": "oaid", "in": "query", "description": "oaid", "required": false, "type": "string" },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" },
+          { "name": "uuid", "in": "query", "description": "uuid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«LoginVO»", "originalRef": "SingleResponse«LoginVO»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/register/check": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "验证手机号是否注册",
+        "operationId": "registerCheckUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserRegisterCheckCmd", "originalRef": "UserRegisterCheckCmd" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SingleResponse«RegisterCheckVO»",
+              "originalRef": "SingleResponse«RegisterCheckVO»"
+            }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/registerOrLogin": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "用户注册&登录(验证码)",
+        "operationId": "registerOrLoginUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          { "name": "channelType", "in": "query", "description": "channelType", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "clientType",
+            "in": "query",
+            "description": "clientType",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserRegisterOrLoginCmd", "originalRef": "UserRegisterOrLoginCmd" }
+          },
+          { "name": "idfa", "in": "query", "description": "idfa", "required": false, "type": "string" },
+          { "name": "oaid", "in": "query", "description": "oaid", "required": false, "type": "string" },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" },
+          { "name": "uuid", "in": "query", "description": "uuid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«LoginVO»", "originalRef": "SingleResponse«LoginVO»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/registerOrLogin/oneClick": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "一键注册登录",
+        "operationId": "registerOrLoginByOneClickUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          { "name": "channelType", "in": "query", "description": "channelType", "required": false, "type": "string" },
+          {
+            "in": "body",
+            "name": "clientIp",
+            "description": "clientIp",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "clientType",
+            "in": "query",
+            "description": "clientType",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterOrLoginByOneClickCmd",
+              "originalRef": "RegisterOrLoginByOneClickCmd"
+            }
+          },
+          { "name": "idfa", "in": "query", "description": "idfa", "required": false, "type": "string" },
+          { "name": "oaid", "in": "query", "description": "oaid", "required": false, "type": "string" },
+          { "name": "udid", "in": "query", "description": "udid", "required": false, "type": "string" },
+          { "name": "uuid", "in": "query", "description": "uuid", "required": false, "type": "string" }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/SingleResponse«LoginVO»", "originalRef": "SingleResponse«LoginVO»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user/resetPassword": {
+      "post": {
+        "tags": ["用户接口"],
+        "summary": "重置登录密码",
+        "operationId": "resetPasswordUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "cmd",
+            "description": "cmd",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserResetPasswordCmd", "originalRef": "UserResetPasswordCmd" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK", "schema": { "$ref": "#/definitions/Response", "originalRef": "Response" } },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "AddressCreateCmd": {
+      "type": "object",
+      "required": ["receivingAddress", "receivingMobile", "receivingName", "region"],
+      "properties": {
+        "isDefault": { "type": "integer", "format": "int32", "description": "默认地址 0-非默认；1-默认" },
+        "receivingAddress": { "type": "string", "description": "详细地址" },
+        "receivingMobile": { "type": "string", "description": "收货人手机号" },
+        "receivingName": { "type": "string", "description": "收货人姓名" },
+        "region": { "type": "string", "description": "所在地区" }
+      },
+      "title": "AddressCreateCmd"
+    },
+    "AddressDeleteCmd": {
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "string", "description": "地址ID" } },
+      "title": "AddressDeleteCmd"
+    },
+    "AddressEditCmd": {
+      "type": "object",
+      "required": ["id", "receivingAddress", "receivingMobile", "receivingName", "region"],
+      "properties": {
+        "id": { "type": "string", "description": "地址ID" },
+        "isDefault": { "type": "integer", "format": "int32", "description": "默认地址 0-非默认；1-默认" },
+        "receivingAddress": { "type": "string", "description": "详细地址" },
+        "receivingMobile": { "type": "string", "description": "收货人手机号" },
+        "receivingName": { "type": "string", "description": "收货人姓名" },
+        "region": { "type": "string", "description": "所在地区" }
+      },
+      "title": "AddressEditCmd"
+    },
+    "AddressVO": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "地址ID" },
+        "isDefault": { "type": "integer", "format": "int32", "description": "默认地址 0-非默认；1-默认" },
+        "receivingAddress": { "type": "string", "description": "详细地址" },
+        "receivingMobile": { "type": "string", "description": "收货手机号" },
+        "receivingName": { "type": "string", "description": "收货人名称" },
+        "region": { "type": "string", "description": "所在地区" }
+      },
+      "title": "AddressVO"
+    },
+    "Amount": {
+      "type": "object",
+      "properties": {
+        "recharge": { "type": "number", "description": "充值金额" },
+        "reward": { "type": "string", "description": "奖励标语" }
+      },
+      "title": "Amount"
+    },
+    "AppInitVO": { "type": "object", "title": "AppInitVO" },
+    "AppLogCollectCmd": {
+      "type": "object",
+      "required": ["log"],
+      "properties": { "log": { "type": "string", "description": "日志" } },
+      "title": "AppLogCollectCmd"
+    },
+    "AppVersionVO": {
+      "type": "object",
+      "properties": {
+        "desc": { "type": "string", "description": "描述" },
+        "downloadLink": { "type": "string", "description": "安装包下载链接" },
+        "updateType": {
+          "type": "integer",
+          "format": "int32",
+          "description": "更新类型 0-不提醒；1-提醒更新；2-强制更新"
+        },
+        "versionCode": { "type": "integer", "format": "int32", "description": "版本号编码" },
+        "versionName": { "type": "string", "description": "版本号" }
+      },
+      "title": "AppVersionVO"
+    },
+    "BalanceVO": {
+      "type": "object",
+      "properties": {
+        "balance": { "type": "number", "description": "余额" },
+        "bonus": { "type": "number", "description": "奖励金" },
+        "canWithdrawBalance": { "type": "number", "description": "可提现余额" },
+        "orderAmount": { "type": "number", "description": "订购金额" },
+        "rewardsPoints": { "type": "integer", "format": "int32", "description": "积分" }
+      },
+      "title": "BalanceVO"
+    },
+    "BannerVO": {
+      "type": "object",
+      "properties": {
+        "link": { "type": "string", "description": "链接" },
+        "picture": { "type": "string", "description": "图片地址" },
+        "title": { "type": "string", "description": "标题" }
+      },
+      "title": "BannerVO"
+    },
+    "CardBindingInfoVO": {
+      "type": "object",
+      "properties": {
+        "bankAccount": { "type": "string", "description": "银行卡号" },
+        "bankCode": { "type": "string", "description": "银行编码" },
+        "bankIcon": { "type": "string", "description": "银行图标" },
+        "bankName": { "type": "string", "description": "银行名称" },
+        "certNo": { "type": "string", "description": "持卡人身份证号" },
+        "name": { "type": "string", "description": "持卡人姓名" },
+        "phone": { "type": "string", "description": "手机号" }
+      },
+      "title": "CardBindingInfoVO"
+    },
+    "CardUnbindCmd": {
+      "type": "object",
+      "required": ["payType", "verifyCode"],
+      "properties": {
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "payType": { "type": "integer", "format": "int32", "description": "渠道类型 1-充值 2-提现" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "CardUnbindCmd"
+    },
+    "CashierPayCmd": {
+      "type": "object",
+      "required": ["amount", "payCode"],
+      "properties": {
+        "amount": { "type": "number", "description": "金额" },
+        "payCode": { "type": "string", "description": "支付渠道" }
+      },
+      "title": "CashierPayCmd"
+    },
+    "CashierPayVO": {
+      "type": "object",
+      "properties": {
+        "htmlStr": { "type": "string", "description": "html 代码片段" },
+        "orderNum": { "type": "string", "description": "订单号" },
+        "url": { "type": "string", "description": "收银台地址" }
+      },
+      "title": "CashierPayVO"
+    },
+    "ContractOrderCloseCmd": {
+      "type": "object",
+      "required": ["orderNum"],
+      "properties": { "orderNum": { "type": "string", "description": "订单号" } },
+      "title": "ContractOrderCloseCmd"
+    },
+    "ContractOrderCreateCmd": {
+      "type": "object",
+      "required": ["bottomPoint", "contractType", "direction", "number", "productId", "topPoint"],
+      "properties": {
+        "bottomPoint": { "type": "number", "description": "止损浮动点数" },
+        "contractType": { "type": "integer", "format": "int32", "description": "订购方式 1-现金；2-券；3-积分" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" },
+        "number": { "type": "integer", "format": "int32", "description": "份数" },
+        "productId": { "type": "string", "description": "产品ID" },
+        "topPoint": { "type": "number", "description": "止盈浮动动点数" }
+      },
+      "title": "ContractOrderCreateCmd"
+    },
+    "ContractOrderDeliveryCmd": {
+      "type": "object",
+      "required": ["addressId", "deliveryNumber", "orderNum"],
+      "properties": {
+        "addressId": { "type": "string", "description": "地址ID" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "deliveryNumber": { "type": "integer", "format": "int32", "description": "提货数量" },
+        "orderNum": { "type": "string", "description": "订单号" }
+      },
+      "title": "ContractOrderDeliveryCmd"
+    },
+    "ContractOrderDeliveryVO": {
+      "type": "object",
+      "properties": {
+        "address": { "description": "默认收货地址", "$ref": "#/definitions/AddressVO", "originalRef": "AddressVO" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "lossCost": { "type": "number", "description": "损耗费用" },
+        "materialCost": { "type": "number", "description": "辅料费用" },
+        "premiumCost": { "type": "number", "description": "原材料溢价费用" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPic": { "type": "string", "description": "商品图片" },
+        "productPrice": { "type": "number", "description": "商品价格" },
+        "rawCost": { "type": "number", "description": "原料费用" },
+        "taxesCost": { "type": "number", "description": "税费" },
+        "technologyCost": { "type": "number", "description": "工艺费" }
+      },
+      "title": "ContractOrderDeliveryVO"
+    },
+    "ContractOrderUpdateCmd": {
+      "type": "object",
+      "required": ["orderNum"],
+      "properties": {
+        "bottomPoint": { "type": "number", "description": "止损浮动点数" },
+        "closeOvernight": { "type": "boolean", "description": "关闭持仓过夜" },
+        "orderNum": { "type": "string", "description": "订单号" },
+        "topPoint": { "type": "number", "description": "止盈浮动动点数" }
+      },
+      "title": "ContractOrderUpdateCmd"
+    },
+    "CouponVO": {
+      "type": "object",
+      "properties": {
+        "categoryId": { "type": "string", "description": "分类编号" },
+        "code": { "type": "string", "description": "编码" },
+        "contract": { "type": "string", "description": "行情编号" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "couponName": { "type": "string", "description": "券名称" },
+        "expireTime": { "type": "integer", "format": "int64", "description": "过期时间" },
+        "expireTimeStr": { "type": "string", "description": "过期时间" },
+        "faceValue": { "type": "number", "description": "面值" },
+        "sceneType": { "type": "integer", "format": "int32", "description": "使用场景 1-订购；2-提货；3-零售" },
+        "skuId": { "type": "string", "description": "商品ID" }
+      },
+      "title": "CouponVO"
+    },
+    "DeliveryConfirmReceivedCmd": {
+      "type": "object",
+      "required": ["deliveryOrderNum"],
+      "properties": { "deliveryOrderNum": { "type": "string", "description": "订单号" } },
+      "title": "DeliveryConfirmReceivedCmd"
+    },
+    "DeliveryOrderVO": {
+      "type": "object",
+      "properties": {
+        "deliveryOrderNum": { "type": "string", "description": "提货单号" },
+        "deliveryProductPic": { "type": "string", "description": "商品图片" },
+        "number": { "type": "integer", "format": "int32", "description": "提货数量" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPrice": { "type": "number", "description": "商品价格" },
+        "status": {
+          "type": "integer",
+          "format": "int32",
+          "description": "订单状态 1-已付款；2-已发货；3-已完成；4-已关闭"
+        }
+      },
+      "title": "DeliveryOrderVO"
+    },
+    "EconomicCalendarVO": {
+      "type": "object",
+      "properties": {
+        "actual": { "type": "string", "description": "公布值" },
+        "cateId": { "type": "string", "description": "/" },
+        "consensus": { "type": "string", "description": "预测值" },
+        "country": { "type": "string", "description": "国家" },
+        "countryCount": { "type": "integer", "format": "int32", "description": "/" },
+        "countryImg": { "type": "string", "description": "国旗" },
+        "date": { "type": "string", "description": "日期" },
+        "datetime": { "type": "string", "description": "时间" },
+        "detailId": { "type": "integer", "format": "int32", "description": "详情ID" },
+        "isFirst": { "type": "integer", "format": "int32", "description": "/" },
+        "isImportant": { "type": "integer", "format": "int32", "description": "是否重要" },
+        "previous": { "type": "string", "description": "前值" },
+        "revised": { "type": "string", "description": "/" },
+        "star": { "type": "integer", "format": "int32", "description": "星数" },
+        "starImg": { "type": "string", "description": "星数图片" },
+        "statusName": { "type": "string", "description": "影响" },
+        "title": { "type": "string", "description": "标题" },
+        "unit": { "type": "string", "description": "单位" },
+        "updateTimestamp": { "type": "integer", "format": "int32", "description": "更新时间" }
+      },
+      "title": "EconomicCalendarVO"
+    },
+    "EconomicFlashDataVo": {
+      "type": "object",
+      "properties": {
+        "content": { "type": "string", "description": "内容" },
+        "pic": { "type": "string", "description": "图片" }
+      },
+      "title": "EconomicFlashDataVo"
+    },
+    "EconomicFlashVO": {
+      "type": "object",
+      "properties": {
+        "channel": { "type": "array", "description": "/", "items": { "type": "integer", "format": "int32" } },
+        "data": {
+          "description": "数据",
+          "$ref": "#/definitions/EconomicFlashDataVo",
+          "originalRef": "EconomicFlashDataVo"
+        },
+        "id": { "type": "string", "description": "id" },
+        "important": { "type": "integer", "format": "int32", "description": "/" },
+        "remark": { "type": "array", "description": "备注", "items": { "type": "string" } },
+        "tags": { "type": "array", "description": "标签", "items": { "type": "string" } },
+        "time": { "type": "string", "description": "时间" },
+        "type": { "type": "integer", "format": "int32", "description": "类型" }
+      },
+      "title": "EconomicFlashVO"
+    },
+    "ExchangeCmd": {
+      "type": "object",
+      "required": ["promotionCode"],
+      "properties": { "promotionCode": { "type": "string", "description": "券类型编号" } },
+      "title": "ExchangeCmd"
+    },
+    "FastBindApplyCmd": {
+      "type": "object",
+      "required": ["bankAccount", "certNo", "name", "phone"],
+      "properties": {
+        "bankAccount": { "type": "string", "description": "银行卡号" },
+        "certNo": { "type": "string", "description": "持卡人身份证号" },
+        "name": { "type": "string", "description": "持卡人姓名" },
+        "payCode": { "type": "string", "description": "支付渠道（默认SandBackFastPay- 杉德后台快捷）" },
+        "phone": { "type": "string", "description": "手机号" }
+      },
+      "title": "FastBindApplyCmd"
+    },
+    "FastBindApplylVO": {
+      "type": "object",
+      "properties": {
+        "orderNum": { "type": "string", "description": "签约申请订单号" },
+        "payCode": { "type": "string", "description": "支付渠道" }
+      },
+      "title": "FastBindApplylVO"
+    },
+    "FastBindConfirmCmd": {
+      "type": "object",
+      "required": ["cardNo", "orderNum", "payCode", "verifyCode"],
+      "properties": {
+        "cardNo": { "type": "string", "description": "银行卡号" },
+        "orderNum": { "type": "string", "description": "签约申请订单号" },
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "FastBindConfirmCmd"
+    },
+    "FastPayApplyCmd": {
+      "type": "object",
+      "required": ["amount", "bankAccount", "certNo", "name", "payCode", "phone"],
+      "properties": {
+        "amount": { "type": "number", "description": "金额 " },
+        "bankAccount": { "type": "string", "description": "银行卡号" },
+        "certNo": { "type": "string", "description": "持卡人身份证号" },
+        "name": { "type": "string", "description": "持卡人姓名" },
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "phone": { "type": "string", "description": "手机号" }
+      },
+      "title": "FastPayApplyCmd"
+    },
+    "FastPayApplylVO": {
+      "type": "object",
+      "properties": { "orderNum": { "type": "string", "description": "签约申请订单号" } },
+      "title": "FastPayApplylVO"
+    },
+    "FastPayConfirmCmd": {
+      "type": "object",
+      "required": ["orderNum", "payCode", "verifyCode"],
+      "properties": {
+        "ip": { "type": "string", "description": "登录IP --不用传--" },
+        "oaid": { "type": "string", "description": "登录设备OAID --不用传--" },
+        "orderNum": { "type": "string", "description": "签约申请订单号" },
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "udid": { "type": "string", "description": "登录设备UDID --不用传--" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "FastPayConfirmCmd"
+    },
+    "GetRewardCmd": {
+      "type": "object",
+      "required": ["recordId"],
+      "properties": { "recordId": { "type": "integer", "format": "int64", "description": "记录ID" } },
+      "title": "GetRewardCmd"
+    },
+    "GoodOrderVO": {
+      "type": "object",
+      "properties": {
+        "actualClosePrice": { "type": "number", "description": "退订价" },
+        "createPrice": { "type": "number", "description": "下单价" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" },
+        "durationStr": { "type": "string", "description": "用时" },
+        "level": { "type": "integer", "format": "int32", "description": "等级" },
+        "nickname": { "type": "string", "description": "昵称" },
+        "number": { "type": "integer", "format": "int32", "description": "数量" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "timeStr": { "type": "string", "description": "日期时间" },
+        "userPic": { "type": "string", "description": "头像" }
+      },
+      "title": "GoodOrderVO"
+    },
+    "KlineVO": {
+      "type": "object",
+      "properties": {
+        "close": { "type": "string", "description": "昨收价" },
+        "code": { "type": "string", "description": "行情编号" },
+        "high": { "type": "string", "description": "最高价" },
+        "last": { "type": "string", "description": "最新价(收盘价)" },
+        "low": { "type": "string", "description": "最低价" },
+        "open": { "type": "string", "description": "开市价" },
+        "periodWithDate": { "type": "string", "description": "时段（包含日期）" },
+        "time": { "type": "integer", "format": "int64", "description": "最新价发布时间" },
+        "volume": { "type": "integer", "format": "int64", "description": "当前总成交量" }
+      },
+      "title": "KlineVO"
+    },
+    "LimitOrderCancelCmd": {
+      "type": "object",
+      "required": ["orderNum"],
+      "properties": { "orderNum": { "type": "string", "description": "订单号" } },
+      "title": "LimitOrderCancelCmd"
+    },
+    "LimitOrderCreateCmd": {
+      "type": "object",
+      "required": ["bottomPoint", "createPrice", "direction", "floatPoint", "number", "productId", "topPoint"],
+      "properties": {
+        "bottomPoint": { "type": "number", "description": "止损浮动点数" },
+        "createPrice": { "type": "number", "description": "挂单价格" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" },
+        "floatPoint": { "type": "number", "description": "误差价" },
+        "number": { "type": "integer", "format": "int32", "description": "份数" },
+        "productId": { "type": "string", "description": "产品ID" },
+        "topPoint": { "type": "number", "description": "止盈浮动动点数" }
+      },
+      "title": "LimitOrderCreateCmd"
+    },
+    "LoginVO": {
+      "type": "object",
+      "properties": {
+        "accessToken": { "type": "string", "description": "会话标识" },
+        "flag": {
+          "type": "integer",
+          "format": "int32",
+          "description": "是否启用：1-账户正常；0-账户无效；101-禁止充值；102-禁止提现；103-禁止交易；104-禁止充值、提现；105-禁止交易、充值；106-禁止交易、提现；107-禁止充值、提现、交易"
+        },
+        "mobile": { "type": "string", "description": "手机号" },
+        "unitNo": { "type": "string", "description": "会员编号" }
+      },
+      "title": "LoginVO"
+    },
+    "MultiResponse«AddressVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/AddressVO", "originalRef": "AddressVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«AddressVO»"
+    },
+    "MultiResponse«BannerVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/BannerVO", "originalRef": "BannerVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«BannerVO»"
+    },
+    "MultiResponse«CouponVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/CouponVO", "originalRef": "CouponVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«CouponVO»"
+    },
+    "MultiResponse«DeliveryOrderVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DeliveryOrderVO", "originalRef": "DeliveryOrderVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«DeliveryOrderVO»"
+    },
+    "MultiResponse«EconomicCalendarVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/EconomicCalendarVO", "originalRef": "EconomicCalendarVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«EconomicCalendarVO»"
+    },
+    "MultiResponse«EconomicFlashVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/EconomicFlashVO", "originalRef": "EconomicFlashVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«EconomicFlashVO»"
+    },
+    "MultiResponse«GoodOrderVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/GoodOrderVO", "originalRef": "GoodOrderVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«GoodOrderVO»"
+    },
+    "MultiResponse«KlineVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/KlineVO", "originalRef": "KlineVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«KlineVO»"
+    },
+    "MultiResponse«NoticeVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/NoticeVO", "originalRef": "NoticeVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«NoticeVO»"
+    },
+    "MultiResponse«OrderAmountRankVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OrderAmountRankVO", "originalRef": "OrderAmountRankVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«OrderAmountRankVO»"
+    },
+    "MultiResponse«OrderContractVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/OrderContractVO", "originalRef": "OrderContractVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«OrderContractVO»"
+    },
+    "MultiResponse«OrderLimitVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/OrderLimitVO", "originalRef": "OrderLimitVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«OrderLimitVO»"
+    },
+    "MultiResponse«PaymentChannelVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentChannelVO", "originalRef": "PaymentChannelVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«PaymentChannelVO»"
+    },
+    "MultiResponse«PaymentRecordVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/PaymentRecordVO", "originalRef": "PaymentRecordVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«PaymentRecordVO»"
+    },
+    "MultiResponse«ProductContractSkuVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ProductContractSkuVO", "originalRef": "ProductContractSkuVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«ProductContractSkuVO»"
+    },
+    "MultiResponse«ProductContractSpuVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ProductContractSpuVO", "originalRef": "ProductContractSpuVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«ProductContractSpuVO»"
+    },
+    "MultiResponse«ProductRetailVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ProductRetailVO", "originalRef": "ProductRetailVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«ProductRetailVO»"
+    },
+    "MultiResponse«PromotionVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/PromotionVO", "originalRef": "PromotionVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«PromotionVO»"
+    },
+    "MultiResponse«RetailCartVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/RetailCartVO", "originalRef": "RetailCartVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«RetailCartVO»"
+    },
+    "MultiResponse«SellRankVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/SellRankVO", "originalRef": "SellRankVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«SellRankVO»"
+    },
+    "MultiResponse«SupportedBankVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/SupportedBankVO", "originalRef": "SupportedBankVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«SupportedBankVO»"
+    },
+    "MultiResponse«TaskGroupVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/TaskGroupVO", "originalRef": "TaskGroupVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«TaskGroupVO»"
+    },
+    "MultiResponse«UserBonusRecordVO»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/UserBonusRecordVO", "originalRef": "UserBonusRecordVO" }
+        },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«UserBonusRecordVO»"
+    },
+    "MultiResponse«UserHeadPicVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "array", "items": { "$ref": "#/definitions/UserHeadPicVO", "originalRef": "UserHeadPicVO" } },
+        "empty": { "type": "boolean" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "notEmpty": { "type": "boolean" },
+        "success": { "type": "boolean" }
+      },
+      "title": "MultiResponse«UserHeadPicVO»"
+    },
+    "NewUserCouponOrderCreateCmd": {
+      "type": "object",
+      "required": ["direction"],
+      "properties": {
+        "couponId": { "type": "string", "description": "新手券ID" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" }
+      },
+      "title": "NewUserCouponOrderCreateCmd"
+    },
+    "NewUserCouponVO": {
+      "type": "object",
+      "properties": {
+        "categoryId": { "type": "string", "description": "分类编号" },
+        "contract": { "type": "string", "description": "合约编号" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "couponName": { "type": "string", "description": "券名称" },
+        "expireTimeStr": { "type": "string", "description": "过期时间" },
+        "faceValue": { "type": "number", "description": "面值" },
+        "productId": { "type": "string", "description": "商品ID" },
+        "spuName": { "type": "string", "description": "规格" }
+      },
+      "title": "NewUserCouponVO"
+    },
+    "NewUserGuideVO": {
+      "type": "object",
+      "properties": {
+        "close": { "type": "string", "description": "昨收价" },
+        "compensation": { "type": "number", "description": "亏损包赔" },
+        "coupon": {
+          "description": "新手券",
+          "$ref": "#/definitions/NewUserCouponVO",
+          "originalRef": "NewUserCouponVO"
+        },
+        "deliveryProductPic": { "type": "string", "description": "商品图片" },
+        "isLogin": { "type": "boolean", "description": "是否登录状态" },
+        "last": { "type": "string", "description": "最新价(收盘价)" },
+        "nextDayCoupon": { "type": "string", "description": "次日券" },
+        "plAmount": { "type": "number", "description": "总盈利" },
+        "priceUnit": { "type": "string", "description": "报价单位" },
+        "profit": { "type": "boolean", "description": "新手券是否盈利" },
+        "recharge": { "type": "boolean", "description": "充值用户" },
+        "rechargeImg": { "type": "string", "description": "充值引导图片" },
+        "rechargeReward": { "type": "number", "description": "充值奖励" }
+      },
+      "title": "NewUserGuideVO"
+    },
+    "NoticeVO": {
+      "type": "object",
+      "properties": {
+        "link": { "type": "string", "description": "链接" },
+        "title": { "type": "string", "description": "标题" }
+      },
+      "title": "NoticeVO"
+    },
+    "NotifyDayVO": {
+      "type": "object",
+      "properties": {
+        "link": { "type": "string", "description": "链接" },
+        "picture": { "type": "string", "description": "图片地址" },
+        "title": { "type": "string", "description": "标题" }
+      },
+      "title": "NotifyDayVO"
+    },
+    "OrderAmountRankVO": {
+      "type": "object",
+      "properties": {
+        "bonus": { "type": "number", "description": "奖励金" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "nickname": { "type": "string", "description": "昵称" },
+        "orderCount": { "type": "integer", "format": "int64", "description": "下单数" },
+        "rankNum": { "type": "integer", "format": "int32", "description": "排名" },
+        "rewardsPoints": { "type": "integer", "format": "int32", "description": "积分" },
+        "totalOrderAmount": { "type": "number", "description": "总订购金额" },
+        "userId": { "type": "integer", "format": "int64", "description": "用户ID" },
+        "userPic": { "type": "string", "description": "头像" }
+      },
+      "title": "OrderAmountRankVO"
+    },
+    "OrderContractVO": {
+      "type": "object",
+      "properties": {
+        "actualClosePrice": { "type": "number", "description": "退订价" },
+        "amount": { "type": "number", "description": "商品定金" },
+        "bottomPoint": { "type": "number", "description": "止损点数" },
+        "closeTimeStr": { "type": "string", "description": "退订时间" },
+        "closeType": { "type": "string", "description": "退订类型" },
+        "commodityUnit": { "type": "string", "description": "零售商品重量单位" },
+        "contract": { "type": "string", "description": "合约编号" },
+        "contractUrl": { "type": "string", "description": "订购合同链接" },
+        "couponFlag": { "type": "integer", "format": "int32", "description": "是否用券 0-否；1-是" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "createPrice": { "type": "number", "description": "下单价" },
+        "createTime": { "type": "integer", "format": "int64", "description": "下单时间" },
+        "createTimeStr": { "type": "string", "description": "下单时间" },
+        "differenceRatio": { "type": "number", "format": "float", "description": "损益百分比" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" },
+        "fee": { "type": "number", "description": "服务费" },
+        "last": { "type": "number", "description": "最新价" },
+        "lateFeeActual": { "type": "number", "description": "延期提货费" },
+        "number": { "type": "integer", "format": "int32", "description": "份数" },
+        "orderNum": { "type": "string", "description": "订单号" },
+        "overnightFlag": { "type": "integer", "format": "int32", "description": "是否持仓过夜 0-否；1-是" },
+        "payment": { "type": "string", "description": "购买方式" },
+        "plAmount": { "type": "number", "description": "货值损益" },
+        "plRatio": { "type": "number", "description": "货值变动单位" },
+        "pointDifference": { "type": "number", "description": "浮动点数" },
+        "priceScale": { "type": "integer", "format": "int32", "description": "报价的小数位数" },
+        "productId": { "type": "string", "description": "商品ID" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPic": { "type": "string", "description": "商品图" },
+        "retailProductWeight": { "type": "string", "description": "零售商品重量" },
+        "topPoint": { "type": "number", "description": "止盈点数" }
+      },
+      "title": "OrderContractVO"
+    },
+    "OrderLimitVO": {
+      "type": "object",
+      "properties": {
+        "bottomPoint": { "type": "number", "description": "止损点数" },
+        "bottomPrice": { "type": "number", "description": "挂单下限价格" },
+        "createTime": { "type": "integer", "format": "int64", "description": "下单时间" },
+        "createTimeStr": { "type": "string", "description": "下单时间" },
+        "direction": { "type": "integer", "format": "int32", "description": "下单方向 1-结算价预定；2-下单价预定" },
+        "expiration": { "type": "string", "description": "挂单有效期" },
+        "floatPoint": { "type": "number", "description": "价格浮动范围" },
+        "limitPrice": { "type": "number", "description": "挂单价格" },
+        "number": { "type": "integer", "format": "int32", "description": "份数" },
+        "orderNum": { "type": "string", "description": "订单号" },
+        "orderStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "挂单状态 1-已申报；2-委托成功；3-委托失败；4-用户撤单；5-系统撤单"
+        },
+        "payment": { "type": "string", "description": "购买方式" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "resultDesc": { "type": "string", "description": "挂单结果描述" },
+        "topPoint": { "type": "number", "description": "止盈点数" },
+        "topPrice": { "type": "number", "description": "挂单上限价格" }
+      },
+      "title": "OrderLimitVO"
+    },
+    "PasswordCreateCmd": {
+      "type": "object",
+      "required": ["fundPassword"],
+      "properties": { "fundPassword": { "type": "string", "description": "密码" } },
+      "title": "PasswordCreateCmd"
+    },
+    "PasswordResetCmd": {
+      "type": "object",
+      "required": ["fundPassword", "verifyCode"],
+      "properties": {
+        "fundPassword": { "type": "string", "description": "新密码" },
+        "verifyCode": { "type": "string", "description": "短信验证码" }
+      },
+      "title": "PasswordResetCmd"
+    },
+    "PasswordUpdateCmd": {
+      "type": "object",
+      "required": ["newFundPassword", "oldFundPassword"],
+      "properties": {
+        "newFundPassword": { "type": "string", "description": "新密码" },
+        "oldFundPassword": { "type": "string", "description": "旧密码" }
+      },
+      "title": "PasswordUpdateCmd"
+    },
+    "PaymentChannelVO": {
+      "type": "object",
+      "properties": {
+        "amountList": {
+          "type": "array",
+          "description": "金额列表",
+          "items": { "$ref": "#/definitions/Amount", "originalRef": "Amount" }
+        },
+        "channelTip": { "type": "string", "description": "支付渠道说明链接" },
+        "channelType": { "type": "integer", "format": "int32", "description": "渠道类型 1-绑卡快捷支付 2-收银台" },
+        "displayName": { "type": "string", "description": "展示" },
+        "icon": { "type": "string", "description": "icon地址" },
+        "id": { "type": "integer", "format": "int64" },
+        "name": { "type": "string", "description": "渠道名称" },
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "remark": { "type": "string", "description": "渠道备注" },
+        "reward": { "type": "string", "description": "奖励标语" }
+      },
+      "title": "PaymentChannelVO"
+    },
+    "PaymentRecordVO": {
+      "type": "object",
+      "properties": {
+        "addTimeStr": { "type": "string", "description": "创建时间" },
+        "money": { "type": "number", "description": "金额" },
+        "orderTypeStr": { "type": "string", "description": "订单类型" },
+        "payCode": { "type": "string", "description": "支付渠道" },
+        "payCodeStr": { "type": "string", "description": "支付渠道名称" },
+        "statusStr": { "type": "string", "description": "状态" }
+      },
+      "title": "PaymentRecordVO"
+    },
+    "ProductContractCouponVO": {
+      "type": "object",
+      "properties": {
+        "afterDiscountBouns": { "type": "number" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "couponNum": { "type": "integer", "format": "int32", "description": "体验券数量" },
+        "discount": { "type": "number", "description": "用户折扣" },
+        "level": { "type": "integer", "format": "int32", "description": "用户等级" },
+        "needBouns": { "type": "number", "description": "兑换产品体验券所需奖励金" }
+      },
+      "title": "ProductContractCouponVO"
+    },
+    "ProductContractDeliveryVO": {
+      "type": "object",
+      "properties": {
+        "detailPic": { "type": "string", "description": "详情图片" },
+        "material": { "type": "string", "description": "材质" },
+        "priceStr": { "type": "string", "description": "订金" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPic": { "type": "string", "description": "商品图片" },
+        "supplier": { "type": "string", "description": "供应商" },
+        "tradeTime": { "type": "string", "description": "交易时间" },
+        "weightStr": { "type": "string", "description": "零售商品重量" }
+      },
+      "title": "ProductContractDeliveryVO"
+    },
+    "ProductContractDetailVO": {
+      "type": "object",
+      "properties": {
+        "deliveryProductList": {
+          "type": "array",
+          "description": "提货商品列表",
+          "items": { "$ref": "#/definitions/ProductContractDeliveryVO", "originalRef": "ProductContractDeliveryVO" }
+        },
+        "tradeTime": { "type": "string", "description": "交易时间" }
+      },
+      "title": "ProductContractDetailVO"
+    },
+    "ProductContractLimitVO": {
+      "type": "object",
+      "properties": {
+        "lossBottom": { "type": "number", "description": "止损下限" },
+        "lossDefault": { "type": "number", "description": "默认止损百分比" },
+        "lossModifiable": { "type": "boolean", "description": "止损是否可修改" },
+        "lossTop": { "type": "number", "description": "止损上限" },
+        "profitBottom": { "type": "number", "description": "止盈下限" },
+        "profitDefault": { "type": "number", "description": "默认止盈百分比" },
+        "profitModifiable": { "type": "boolean", "description": "止盈可修改" },
+        "profitTop": { "type": "number", "description": "止盈上限" }
+      },
+      "title": "ProductContractLimitVO"
+    },
+    "ProductContractSkuDetail": {
+      "type": "object",
+      "properties": {
+        "price": { "type": "number", "format": "double", "description": "订金" },
+        "skuId": { "type": "string", "description": "订购商品skuId" }
+      },
+      "title": "ProductContractSkuDetail"
+    },
+    "ProductContractSkuVO": {
+      "type": "object",
+      "properties": {
+        "categoryId": { "type": "string", "description": "分类编号" },
+        "contractProductUnit": { "type": "string", "description": "订购商品重量单位" },
+        "contractProductWeight": { "type": "string", "description": "订购商品重量" },
+        "deliveryProductPic": { "type": "string", "description": "商品图片" },
+        "deliveryRetailPrice": { "type": "number", "description": "商品价格" },
+        "fee": { "type": "number", "description": "订货服务费" },
+        "isEnjoy": { "type": "integer", "format": "int32", "description": "是否尊享规格 0-否；1-是" },
+        "lateFee": { "type": "number", "description": "每日延期费" },
+        "name": { "type": "string", "description": "商品名称" },
+        "plRatio": { "type": "number", "description": "浮动损益" },
+        "price": { "type": "number", "format": "double", "description": "默认订金" },
+        "priceRange": { "type": "string", "description": "定金范围" },
+        "productContractSkuDetailList": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ProductContractSkuDetail", "originalRef": "ProductContractSkuDetail" }
+        },
+        "productId": { "type": "string", "description": "商品ID" },
+        "retailProductName": { "type": "string", "description": "零售商品名称" },
+        "retailProductUnit": { "type": "string", "description": "零售商品重量单位" },
+        "retailProductWeight": { "type": "string", "description": "零售商品重量" },
+        "specType": { "type": "string", "description": "规格" }
+      },
+      "title": "ProductContractSkuVO"
+    },
+    "ProductContractSpuVO": {
+      "type": "object",
+      "properties": {
+        "close": { "type": "string", "description": "昨收价" },
+        "code": { "type": "string", "description": "行情编号" },
+        "flag": { "type": "integer", "format": "int32", "description": "开休市状态，1-开市 0-休市" },
+        "icon": { "type": "string", "description": "图标" },
+        "last": { "type": "string", "description": "最新价(收盘价)" },
+        "name": { "type": "string", "description": "名称" },
+        "priceScale": { "type": "integer", "format": "int32", "description": "报价的小数位数" },
+        "priceUnit": { "type": "string", "description": "报价单位" },
+        "productContractSkuVOList": {
+          "type": "array",
+          "description": "品种对应的sku",
+          "items": { "$ref": "#/definitions/ProductContractSkuVO", "originalRef": "ProductContractSkuVO" }
+        },
+        "sellOut": { "type": "integer", "format": "int32", "description": "售罄状态，1-已售罄 0-未售罄" },
+        "timeDataList": {
+          "type": "array",
+          "description": "行情趋势图",
+          "items": { "$ref": "#/definitions/TimeData", "originalRef": "TimeData" }
+        },
+        "tradeTime": {
+          "type": "string",
+          "description": "交易时间（用于前端展示），格式：\"07:00-12:30,12:30-18:00,18:00-23:30,23:30-04:00\""
+        }
+      },
+      "title": "ProductContractSpuVO"
+    },
+    "ProductRetailCategoryVO": {
+      "type": "object",
+      "properties": {
+        "categoryName": { "type": "string", "description": "类别名称" },
+        "productList": {
+          "type": "array",
+          "description": "类别商品列表",
+          "items": { "$ref": "#/definitions/ProductRetailVO", "originalRef": "ProductRetailVO" }
+        }
+      },
+      "title": "ProductRetailCategoryVO"
+    },
+    "ProductRetailVO": {
+      "type": "object",
+      "properties": {
+        "productDetailPic": { "type": "string", "description": "商品详情图" },
+        "productId": { "type": "string", "description": "商品ID" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPic": { "type": "string", "description": "商品图" },
+        "productPrice": { "type": "number", "description": "商品价格" }
+      },
+      "title": "ProductRetailVO"
+    },
+    "PromotionVO": {
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "description": "编码" },
+        "couponName": { "type": "string", "description": "券名称" },
+        "faceValue": { "type": "number", "description": "面值" },
+        "needPoints": { "type": "integer", "format": "int32", "description": "兑换消耗积分" }
+      },
+      "title": "PromotionVO"
+    },
+    "RandomNickNameVO": {
+      "type": "object",
+      "properties": { "nickName": { "type": "string", "description": "昵称" } },
+      "title": "RandomNickNameVO"
+    },
+    "RegisterCheckVO": {
+      "type": "object",
+      "properties": { "flag": { "type": "integer", "format": "int32", "description": "是否注册 0-未注册；1-已注册" } },
+      "title": "RegisterCheckVO"
+    },
+    "RegisterOrLoginByOneClickCmd": {
+      "type": "object",
+      "required": ["token"],
+      "properties": {
+        "channelType": { "type": "string", "description": "推广渠道编号 --不用传--" },
+        "clientType": { "type": "integer", "format": "int32", "description": "客户端类型 1-安卓；2-IOS --不用传--" },
+        "idfa": { "type": "string", "description": "ios idfa --不用传--" },
+        "ip": { "type": "string", "description": "请求ip地址 --不用传--" },
+        "oaid": { "type": "string", "description": "android oaid --不用传--" },
+        "token": { "type": "string", "description": "一键登录token" },
+        "udid": { "type": "string", "description": "android id md5编码 --不用传--" },
+        "uuid": { "type": "string", "description": "User Agent --不用传--" }
+      },
+      "title": "RegisterOrLoginByOneClickCmd"
+    },
+    "Response": {
+      "type": "object",
+      "properties": {
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "Response"
+    },
+    "RetailCartAddProductCmd": {
+      "type": "object",
+      "properties": {
+        "number": { "type": "integer", "format": "int32", "description": "商品数量" },
+        "productId": { "type": "string", "description": "商品ID" }
+      },
+      "title": "RetailCartAddProductCmd"
+    },
+    "RetailCartChangeNumberCmd": {
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "integer", "format": "int64", "description": "购物车商品ID" } },
+      "title": "RetailCartChangeNumberCmd"
+    },
+    "RetailCartDeleteProductCmd": {
+      "type": "object",
+      "required": ["idList"],
+      "properties": {
+        "idList": { "type": "array", "description": "购物车商品ID", "items": { "type": "integer", "format": "int64" } }
+      },
+      "title": "RetailCartDeleteProductCmd"
+    },
+    "RetailCartProductVO": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "format": "int64" },
+        "number": { "type": "integer", "format": "int32", "description": "商品数量" },
+        "productId": { "type": "string", "description": "商品ID" },
+        "productName": { "type": "string", "description": "商品名称" },
+        "productPic": { "type": "string", "description": "商品图" },
+        "productPrice": { "type": "number", "description": "商品价格" }
+      },
+      "title": "RetailCartProductVO"
+    },
+    "RetailCartVO": {
+      "type": "object",
+      "properties": {
+        "categoryName": { "type": "string", "description": "类别名称" },
+        "productList": {
+          "type": "array",
+          "description": "商品列表",
+          "items": { "$ref": "#/definitions/RetailCartProductVO", "originalRef": "RetailCartProductVO" }
+        }
+      },
+      "title": "RetailCartVO"
+    },
+    "RetailHomeVO": {
+      "type": "object",
+      "properties": {
+        "categoryProduct": {
+          "type": "array",
+          "description": "分类商品",
+          "items": { "$ref": "#/definitions/ProductRetailCategoryVO", "originalRef": "ProductRetailCategoryVO" }
+        },
+        "selection": {
+          "type": "array",
+          "description": "精选商品",
+          "items": { "$ref": "#/definitions/ProductRetailVO", "originalRef": "ProductRetailVO" }
+        }
+      },
+      "title": "RetailHomeVO"
+    },
+    "RetailOrderConfirmVO": {
+      "type": "object",
+      "properties": {
+        "address": { "description": "默认收货地址", "$ref": "#/definitions/AddressVO", "originalRef": "AddressVO" },
+        "coupon": { "description": "代金券", "$ref": "#/definitions/CouponVO", "originalRef": "CouponVO" }
+      },
+      "title": "RetailOrderConfirmVO"
+    },
+    "RetailOrderCreateMultiProductCmd": {
+      "type": "object",
+      "required": ["addressId", "productList"],
+      "properties": {
+        "addressId": { "type": "string", "description": "地址ID" },
+        "couponId": { "type": "string", "description": "券ID" },
+        "productList": {
+          "type": "array",
+          "description": "商品列表",
+          "items": { "$ref": "#/definitions/RetailProduct", "originalRef": "RetailProduct" }
+        }
+      },
+      "title": "RetailOrderCreateMultiProductCmd"
+    },
+    "RetailProduct": {
+      "type": "object",
+      "required": ["number", "productId"],
+      "properties": {
+        "number": { "type": "integer", "format": "int32", "description": "数量" },
+        "productId": { "type": "string", "description": "零售商品ID" }
+      },
+      "title": "RetailProduct"
+    },
+    "SellRankVO": {
+      "type": "object",
+      "properties": {
+        "bonus": { "type": "number", "description": "奖励金" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "nickname": { "type": "string", "description": "昵称" },
+        "orderCount": { "type": "integer", "format": "int64", "description": "下单数" },
+        "rankNum": { "type": "integer", "format": "int32", "description": "排名" },
+        "rewardsPoints": { "type": "integer", "format": "int32", "description": "积分" },
+        "totalPlAmount": { "type": "number", "description": "总货值损益（盈亏）" },
+        "userId": { "type": "integer", "format": "int64", "description": "用户ID" },
+        "userPic": { "type": "string", "description": "头像" }
+      },
+      "title": "SellRankVO"
+    },
+    "SendCodeByMobileCmd": {
+      "type": "object",
+      "required": ["mobile", "type"],
+      "properties": {
+        "mobile": { "type": "string", "description": "手机号" },
+        "type": {
+          "type": "string",
+          "description": "业务类型 106101-登录；106102-注册；106111-登录&注册；106106-修改登录密码"
+        }
+      },
+      "title": "SendCodeByMobileCmd"
+    },
+    "SendCodeByTokenCmd": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "业务类型 106103-重置资金密码；106104-绑卡；106105-解绑；106107-提现；106110-充值 106115-注销"
+        }
+      },
+      "title": "SendCodeByTokenCmd"
+    },
+    "SingleResponse«AppInitVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/AppInitVO", "originalRef": "AppInitVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«AppInitVO»"
+    },
+    "SingleResponse«AppVersionVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/AppVersionVO", "originalRef": "AppVersionVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«AppVersionVO»"
+    },
+    "SingleResponse«BalanceVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/BalanceVO", "originalRef": "BalanceVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«BalanceVO»"
+    },
+    "SingleResponse«CardBindingInfoVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/CardBindingInfoVO", "originalRef": "CardBindingInfoVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«CardBindingInfoVO»"
+    },
+    "SingleResponse«CashierPayVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/CashierPayVO", "originalRef": "CashierPayVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«CashierPayVO»"
+    },
+    "SingleResponse«ContractOrderDeliveryVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ContractOrderDeliveryVO", "originalRef": "ContractOrderDeliveryVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ContractOrderDeliveryVO»"
+    },
+    "SingleResponse«FastBindApplylVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/FastBindApplylVO", "originalRef": "FastBindApplylVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«FastBindApplylVO»"
+    },
+    "SingleResponse«FastPayApplylVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/FastPayApplylVO", "originalRef": "FastPayApplylVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«FastPayApplylVO»"
+    },
+    "SingleResponse«LoginVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/LoginVO", "originalRef": "LoginVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«LoginVO»"
+    },
+    "SingleResponse«NewUserGuideVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/NewUserGuideVO", "originalRef": "NewUserGuideVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«NewUserGuideVO»"
+    },
+    "SingleResponse«NotifyDayVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/NotifyDayVO", "originalRef": "NotifyDayVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«NotifyDayVO»"
+    },
+    "SingleResponse«ProductContractCouponVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ProductContractCouponVO", "originalRef": "ProductContractCouponVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ProductContractCouponVO»"
+    },
+    "SingleResponse«ProductContractDeliveryVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ProductContractDeliveryVO", "originalRef": "ProductContractDeliveryVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ProductContractDeliveryVO»"
+    },
+    "SingleResponse«ProductContractDetailVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ProductContractDetailVO", "originalRef": "ProductContractDetailVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ProductContractDetailVO»"
+    },
+    "SingleResponse«ProductContractLimitVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ProductContractLimitVO", "originalRef": "ProductContractLimitVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ProductContractLimitVO»"
+    },
+    "SingleResponse«ProductRetailVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/ProductRetailVO", "originalRef": "ProductRetailVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«ProductRetailVO»"
+    },
+    "SingleResponse«RandomNickNameVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/RandomNickNameVO", "originalRef": "RandomNickNameVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«RandomNickNameVO»"
+    },
+    "SingleResponse«RegisterCheckVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/RegisterCheckVO", "originalRef": "RegisterCheckVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«RegisterCheckVO»"
+    },
+    "SingleResponse«RetailHomeVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/RetailHomeVO", "originalRef": "RetailHomeVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«RetailHomeVO»"
+    },
+    "SingleResponse«RetailOrderConfirmVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/RetailOrderConfirmVO", "originalRef": "RetailOrderConfirmVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«RetailOrderConfirmVO»"
+    },
+    "SingleResponse«SuperviseCardVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/SuperviseCardVO", "originalRef": "SuperviseCardVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«SuperviseCardVO»"
+    },
+    "SingleResponse«SysConfigVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/SysConfigVO", "originalRef": "SysConfigVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«SysConfigVO»"
+    },
+    "SingleResponse«TimelineVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/TimelineVO", "originalRef": "TimelineVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«TimelineVO»"
+    },
+    "SingleResponse«UserRiskVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/UserRiskVO", "originalRef": "UserRiskVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«UserRiskVO»"
+    },
+    "SingleResponse«UserVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/UserVO", "originalRef": "UserVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«UserVO»"
+    },
+    "SingleResponse«VerificationResultVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/VerificationResultVO", "originalRef": "VerificationResultVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«VerificationResultVO»"
+    },
+    "SingleResponse«VerificationTokenVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/VerificationTokenVO", "originalRef": "VerificationTokenVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«VerificationTokenVO»"
+    },
+    "SingleResponse«WithdrawVO»": {
+      "type": "object",
+      "properties": {
+        "data": { "$ref": "#/definitions/WithdrawVO", "originalRef": "WithdrawVO" },
+        "errCode": { "type": "string" },
+        "errMessage": { "type": "string" },
+        "success": { "type": "boolean" }
+      },
+      "title": "SingleResponse«WithdrawVO»"
+    },
+    "SuperviseCardVO": {
+      "type": "object",
+      "properties": {
+        "collectionBankAccount": { "type": "string", "description": "收款银行卡户名" },
+        "collectionBankCardNo": { "type": "string", "description": "收款银行卡号" },
+        "contractBankAccount": { "type": "string", "description": "签约银行卡号" },
+        "contractBankIcon": { "type": "string", "description": "签约银行图标" },
+        "contractBankName": { "type": "string", "description": "签约银行名称" },
+        "openAccountBankAddress": { "type": "string", "description": "开户行联航号" },
+        "openAccountBankNumber": { "type": "string", "description": "开户行联航号" }
+      },
+      "title": "SuperviseCardVO"
+    },
+    "SupportedBankVO": {
+      "type": "object",
+      "properties": {
+        "bankCode": { "type": "string", "description": "银行编码" },
+        "bankIcon": { "type": "string", "description": "银行图标" },
+        "bankName": { "type": "string", "description": "银行名称" },
+        "id": { "type": "integer", "format": "int64" }
+      },
+      "title": "SupportedBankVO"
+    },
+    "SysConfigVO": {
+      "type": "object",
+      "properties": {
+        "rankShow": { "type": "integer", "format": "int32", "description": "排行榜是否显示自己 0-不显示；1-显示" }
+      },
+      "title": "SysConfigVO"
+    },
+    "TaskGroupVO": {
+      "type": "object",
+      "properties": {
+        "bonus": { "type": "integer", "format": "int32", "description": "额外奖励，0：没有，1：有" },
+        "desc": { "type": "string", "description": "任务组描述" },
+        "endTime": { "type": "string", "format": "date-time", "description": "截至时间" },
+        "taskList": {
+          "type": "array",
+          "description": "任务列表",
+          "items": { "$ref": "#/definitions/TaskVO", "originalRef": "TaskVO" }
+        },
+        "title": { "type": "string", "description": "任务组标题" }
+      },
+      "title": "TaskGroupVO"
+    },
+    "TaskVO": {
+      "type": "object",
+      "properties": {
+        "bonus": { "type": "number", "description": "奖励金数量" },
+        "completedStatus": {
+          "type": "integer",
+          "format": "int32",
+          "description": "任务完成状态，1：未完成，0：已完成"
+        },
+        "pic": { "type": "string", "description": "任务图片" },
+        "recordId": { "type": "integer", "format": "int64", "description": "记录ID" },
+        "rewardPoints": { "type": "integer", "format": "int32", "description": "奖励的积分数量" },
+        "rewardStatus": { "type": "integer", "format": "int32", "description": "奖励领取状态，1：未领取，0：已领取" },
+        "title": { "type": "string", "description": "任务标题" }
+      },
+      "title": "TaskVO"
+    },
+    "TimeData": {
+      "type": "object",
+      "properties": {
+        "data": { "type": "string", "description": "价格" },
+        "time": { "type": "integer", "format": "int64", "description": "毫秒时间戳" }
+      },
+      "title": "TimeData"
+    },
+    "TimelineVO": {
+      "type": "object",
+      "properties": {
+        "close": { "type": "string", "description": "昨收价" },
+        "flag": { "type": "integer", "format": "int32", "description": "开休市状态，1-开市 0-休市" },
+        "high": { "type": "string", "description": "最高价" },
+        "last": { "type": "string", "description": "最新价(收盘价)" },
+        "low": { "type": "string", "description": "最低价" },
+        "open": { "type": "string", "description": "开市价" },
+        "time": { "type": "integer", "format": "int64", "description": "最新价发布时间" },
+        "timeline": { "type": "array", "items": { "$ref": "#/definitions/TimeData", "originalRef": "TimeData" } },
+        "tradeTime": {
+          "type": "string",
+          "description": "交易时间（用于前端展示），格式：\"07:00-12:30,12:30-18:00,18:00-23:30,23:30-04:00\""
+        },
+        "volume": { "type": "integer", "format": "int64", "description": "当前总成交量" }
+      },
+      "title": "TimelineVO"
+    },
+    "UserBonusRecordVO": {
+      "type": "object",
+      "properties": {
+        "amount": { "type": "number", "description": "奖励金金额" },
+        "createTime": { "type": "string", "format": "date-time", "description": "奖励金流水时间" },
+        "createTimeStr": { "type": "string", "description": "奖励金流水时间格式化" },
+        "remark": { "type": "string", "description": "奖励金流水说明" }
+      },
+      "title": "UserBonusRecordVO"
+    },
+    "UserCancelAccountCmd": {
+      "type": "object",
+      "required": ["verifyCode"],
+      "properties": { "verifyCode": { "type": "string", "description": "验证码" } },
+      "title": "UserCancelAccountCmd"
+    },
+    "UserHeadPicVO": {
+      "type": "object",
+      "properties": { "headPicUrl": { "type": "string", "description": "头像链接" } },
+      "title": "UserHeadPicVO"
+    },
+    "UserLoginByCodeCmd": {
+      "type": "object",
+      "required": ["mobile", "verifyCode"],
+      "properties": {
+        "ip": { "type": "string", "description": "登录IP --不用传--" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "udid": { "type": "string", "description": "登录设备UDID --不用传--" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "UserLoginByCodeCmd"
+    },
+    "UserLoginByPasswordCmd": {
+      "type": "object",
+      "required": ["mobile", "password"],
+      "properties": {
+        "ip": { "type": "string", "description": "登录IP --不用传--" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "password": { "type": "string", "description": "密码" },
+        "udid": { "type": "string", "description": "登录设备UDID --不用传--" }
+      },
+      "title": "UserLoginByPasswordCmd"
+    },
+    "UserNickAndHeadPicCmd": {
+      "type": "object",
+      "required": ["headPicUrl", "nickName"],
+      "properties": {
+        "headPicUrl": { "type": "string", "description": "头像" },
+        "nickName": { "type": "string", "description": "昵称" }
+      },
+      "title": "UserNickAndHeadPicCmd"
+    },
+    "UserRegisterCheckCmd": {
+      "type": "object",
+      "required": ["mobile"],
+      "properties": { "mobile": { "type": "string", "description": "手机号" } },
+      "title": "UserRegisterCheckCmd"
+    },
+    "UserRegisterCmd": {
+      "type": "object",
+      "required": ["mobile", "password", "verifyCode"],
+      "properties": {
+        "channelType": { "type": "string", "description": "推广渠道编号 --不用传--" },
+        "clientType": { "type": "integer", "format": "int32", "description": "客户端类型 1-安卓；2-IOS --不用传--" },
+        "idfa": { "type": "string", "description": "ios idfa --不用传--" },
+        "ip": { "type": "string", "description": "请求ip地址 --不用传--" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "oaid": { "type": "string", "description": "android oaid --不用传--" },
+        "password": { "type": "string", "description": "密码" },
+        "udid": { "type": "string", "description": "android id md5编码 --不用传--" },
+        "uuid": { "type": "string", "description": "User Agent --不用传--" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "UserRegisterCmd"
+    },
+    "UserRegisterOrLoginCmd": {
+      "type": "object",
+      "required": ["mobile", "verifyCode"],
+      "properties": {
+        "channelType": { "type": "string", "description": "推广渠道编号 --不用传--" },
+        "clientType": { "type": "integer", "format": "int32", "description": "客户端类型 1-安卓；2-IOS --不用传--" },
+        "idfa": { "type": "string", "description": "ios idfa --不用传--" },
+        "ip": { "type": "string", "description": "请求ip地址 --不用传--" },
+        "mobile": { "type": "string", "description": "手机号" },
+        "oaid": { "type": "string", "description": "android oaid --不用传--" },
+        "udid": { "type": "string", "description": "android id md5编码 --不用传--" },
+        "uuid": { "type": "string", "description": "User Agent --不用传--" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "UserRegisterOrLoginCmd"
+    },
+    "UserResetPasswordCmd": {
+      "type": "object",
+      "required": ["mobile", "password", "verifyCode"],
+      "properties": {
+        "mobile": { "type": "string", "description": "手机号" },
+        "password": { "type": "string", "description": "密码" },
+        "verifyCode": { "type": "string", "description": "验证码" }
+      },
+      "title": "UserResetPasswordCmd"
+    },
+    "UserRiskVO": {
+      "type": "object",
+      "properties": {
+        "riskLevel": { "type": "integer", "format": "int32", "description": "履约等级" },
+        "riskManageStatus": { "type": "integer", "format": "int32", "description": "用户风控状态 0-禁止 1-正常" }
+      },
+      "title": "UserRiskVO"
+    },
+    "UserVO": {
+      "type": "object",
+      "properties": {
+        "bonus": { "type": "number", "description": "奖励金" },
+        "discount": { "type": "number", "description": "折扣" },
+        "faceVerified": { "type": "integer", "format": "int32", "description": "人脸认证 0-未认证，1-已认证" },
+        "growth": { "type": "integer", "format": "int64", "description": "成长值" },
+        "growthTotal": { "type": "integer", "format": "int64", "description": "下一级所需成长值" },
+        "level": { "type": "integer", "format": "int32", "description": "等级" },
+        "nickname": { "type": "string", "description": "昵称" },
+        "realNameVerified": { "type": "integer", "format": "int32", "description": "实名认证 0-未认证，1-已认证" },
+        "rewardsPoints": { "type": "integer", "format": "int32", "description": "积分" },
+        "userId": { "type": "integer", "format": "int64", "description": "用户ID" },
+        "userPic": { "type": "string", "description": "头像" }
+      },
+      "title": "UserVO"
+    },
+    "VerificationResultVO": {
+      "type": "object",
+      "properties": { "passed": { "type": "boolean" } },
+      "title": "VerificationResultVO"
+    },
+    "VerificationTokenVO": {
+      "type": "object",
+      "properties": { "verificationToken": { "type": "string" } },
+      "title": "VerificationTokenVO"
+    },
+    "VerifyCodeResendCmd": {
+      "type": "object",
+      "required": ["orderNum", "payCode"],
+      "properties": {
+        "orderNum": { "type": "string", "description": "签约申请订单号" },
+        "payCode": { "type": "string", "description": "支付渠道" }
+      },
+      "title": "VerifyCodeResendCmd"
+    },
+    "WithdrawBindCardCmd": {
+      "type": "object",
+      "required": ["bankAccount", "certNo", "name", "phone"],
+      "properties": {
+        "bankAccount": { "type": "string", "description": "银行卡号" },
+        "certNo": { "type": "string", "description": "持卡人身份证号" },
+        "name": { "type": "string", "description": "持卡人姓名" },
+        "phone": { "type": "string", "description": "手机号" }
+      },
+      "title": "WithdrawBindCardCmd"
+    },
+    "WithdrawCmd": {
+      "type": "object",
+      "required": ["amount", "bankAccount", "certNo", "fundPassword", "name", "verifyCode"],
+      "properties": {
+        "amount": { "type": "number", "description": "金额" },
+        "bankAccount": { "type": "string", "description": "银行卡号" },
+        "certNo": { "type": "string", "description": "持卡人身份证号" },
+        "fundPassword": { "type": "string", "description": "资金密码" },
+        "name": { "type": "string", "description": "持卡人姓名" },
+        "verifyCode": { "type": "string", "description": "短信验证码" }
+      },
+      "title": "WithdrawCmd"
+    },
+    "WithdrawVO": {
+      "type": "object",
+      "properties": { "orderNum": { "type": "string", "description": "订单号" } },
+      "title": "WithdrawVO"
+    }
+  }
+}

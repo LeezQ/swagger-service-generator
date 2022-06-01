@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "types": [
+      "node"
+    ],
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "sourceMap": false,
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+    },
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "mock/**/*",
+    "src/**/*",
+    "config/**/*",
+    ".umirc.ts",
+    "typings.d.ts",
+    "interface.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "es",
+    "dist",
+    "typings",
+    "**/__test__",
+    "test",
+    "docs",
+    "tests"
+  ]
+}

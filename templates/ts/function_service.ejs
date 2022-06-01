@@ -1,0 +1,14 @@
+/// <reference path = "api.d.ts" />
+${request}
+
+// ${summary}
+export async function ${operationId}(
+  params: ${paramsType},
+  extra?: { [key: string]: any },
+): Promise<${responseType}> {
+  return request('${basePath === '/' ? '' : basePath}${url}', {
+    method: '${method.toUpperCase()}',
+    data: params,
+    ...(extra || {}),
+  });
+}

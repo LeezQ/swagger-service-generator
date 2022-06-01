@@ -1,0 +1,10 @@
+import 'package:get/get.dart';
+
+import 'controller.dart';
+
+class <%= data.name%>Binding implements Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<<%= data.name%>Controller>(() => <%= data.name%>Controller());
+  }
+}

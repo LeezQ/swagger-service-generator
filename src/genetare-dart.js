@@ -124,7 +124,9 @@ function generateEntity(definitions, entityPath = 'lib/entity/') {
   `;
 
   let __ENTITY_CONTENT__ = '';
+  console.log(99911, Object.keys(definitions));
   Object.keys(definitions).forEach((modelName) => {
+    console.log(123123, `./${replaceX(modelName)}.dart`);
     __ENTITY_CONTENT__ += `
 export './${replaceX(modelName)}.dart';
     `
@@ -192,7 +194,6 @@ function generateModelProperty(property, name, required) {
   if (_in === 'body') {
     type = schema.type;
   }
-  console.log(name, JSON.stringify(property));
 
   let res = ``;
   let requiredFlag = (name === 'success') || required.includes(name) ? true : false;
@@ -286,7 +287,7 @@ Future<${responseType}> ${operationId}({
 }) async {
   final response = await HttpUtil().post(
     '${basePath === '/' ? '' : basePath}${url}',
-    data,
+    data.toJson(),
   );
   return ${responseType}.fromJson(response);
 }
