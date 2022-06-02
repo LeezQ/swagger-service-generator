@@ -40,11 +40,20 @@ function run() {
                 ];
             }
         });
+        console.log(chalk_1.default.green('开始生成 service...'));
         genetateService(pathGroups, fileNameReg, request, basePath, outDir);
+        console.log(chalk_1.default.green('done! service...'));
+        console.log(chalk_1.default.green('开始生成 models...'));
         generateParamModel(pathGroups, modelDir);
+        console.log(chalk_1.default.green('done! '));
+        console.log(chalk_1.default.green('开始生成 entity...'));
         generateEntity(definitions);
+        console.log(chalk_1.default.green('done!'));
+        console.log(chalk_1.default.green('format dart code...'));
         child_process.execSync(`dart format ${path.join(process.cwd(), 'lib')}`);
-        // child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
+        console.log(chalk_1.default.green('done!'));
+        console.log(chalk_1.default.green('pub run build_runner...'));
+        child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
         console.log(chalk_1.default.green('生成完成'));
     });
 }
@@ -64,30 +73,6 @@ function replaceX(str) {
     }
     str = str.replace('#/definitions/', '').replace('«', '').replace('»', '');
     return str;
-}
-function generateEntity(definitions, entityPath = 'lib/entity/') {
-    const entityDir = path.join(process.cwd(), entityPath); //存放api文件地址
-    if (!fs.existsSync(entityDir)) {
-        // mkdir -p
-        fs.mkdirSync(entityDir, { recursive: true });
-    }
-    Object.keys(definitions).forEach((modelName) => {
-        const { type, required = [], properties = {}, title } = definitions[modelName];
-        // 生成 model index
-        ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/entities.ejs'), {
-            modelName,
-            required,
-            properties,
-            replaceX: replaceX,
-            upperCaseFirstLetter,
-            generateModelProperty,
-        }, {}, function (err, str) {
-            if (err) {
-                console.log(chalk_1.default.red(err.toString()));
-            }
-            fs.writeFileSync(path.join(entityDir, `${replaceX(modelName)}.dart`), str);
-        });
-    });
 }
 function generateDartType(type) {
     switch (type) {
@@ -247,6 +232,30 @@ function generateParamModel(pathGroups, modelDir) {
         }
         fs.writeFileSync(path.join(modelDirPath, `model.dart`), str);
         // successLog(path.join(genetatePathDir, `view.dart`));
+    });
+}
+function generateEntity(definitions, entityPath = 'lib/entity/') {
+    const entityDir = path.join(process.cwd(), entityPath); //存放api文件地址
+    if (!fs.existsSync(entityDir)) {
+        // mkdir -p
+        fs.mkdirSync(entityDir, { recursive: true });
+    }
+    Object.keys(definitions).forEach((modelName) => {
+        const { type, required = [], properties = {}, title } = definitions[modelName];
+        // 生成 entities
+        ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/entities.ejs'), {
+            modelName,
+            required,
+            properties,
+            replaceX: replaceX,
+            upperCaseFirstLetter,
+            generateModelProperty,
+        }, {}, function (err, str) {
+            if (err) {
+                console.log(chalk_1.default.red(err.toString()));
+            }
+            fs.writeFileSync(path.join(entityDir, `${replaceX(modelName)}.dart`), str);
+        });
     });
 }
 run();

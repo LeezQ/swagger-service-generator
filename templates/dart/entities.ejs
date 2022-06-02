@@ -2,7 +2,7 @@
 import './entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part '<%= replaceX(modelName)%>.g.dart';
+part '<%- replaceX(modelName)%>.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class <%- upperCaseFirstLetter(modelName)%> {
@@ -30,7 +30,7 @@ Object.keys(properties).forEach((_key) => {
 
   <%- upperCaseFirstLetter(modelName)%> (<%- Object.keys(properties).length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}` : '' -%>);
 
-factory <%= replaceX(modelName)%>.fromJson(Map<String, dynamic> json) => _$<%= replaceX(modelName)%>FromJson(json);
+factory <%- replaceX(modelName)%>.fromJson(Map<String, dynamic> json) => _$<%- replaceX(modelName)%>FromJson(json);
 
-Map<String, dynamic> toJson() => _$<%= replaceX(modelName)%>ToJson(this);
+Map<String, dynamic> toJson() => _$<%- replaceX(modelName)%>ToJson(this);
 }

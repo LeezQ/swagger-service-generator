@@ -18,29 +18,29 @@ import '../models/model.dart';
 %>
 <% if (method === 'get') { %>
 /// <%- summary%>
-Future<<%= responseType%>> <%= operationId%>({
-  required <%= paramsType%> data,
+Future<<%- responseType%>> <%- operationId%>({
+  required <%- paramsType%> data,
   bool refresh = false,
   bool cacheDisk = false,
 }) async {
   final response = await HttpUtil().get(
-    '<%= basePath === '/' ? '' : basePath %><%= url%>',
-    queryParameters: toJson(),
+    '<%- basePath === '/' ? '' : basePath %><%- url%>',
+    queryParameters: data.toJson(),
     refresh: refresh,
     cacheDisk: cacheDisk,
   );
-  return <%= responseType%>.fromJson(response);
+  return <%- responseType%>.fromJson(response);
 }
 <% } else if (method === 'post') { %>
-/// <%= summary%>
-Future<<%= responseType%>> <%= operationId%>({
-  required <%= paramsType%> data,
+/// <%- summary%>
+Future<<%- responseType%>> <%- operationId%>({
+  required <%- paramsType%> data,
 }) async {
   final response = await HttpUtil().post(
-    '<%= basePath === '/' ? '' : basePath%><%= url%>',
-    toJson(),
+    '<%- basePath === '/' ? '' : basePath%><%- url%>',
+    data.toJson(),
   );
-  return <%= responseType%>.fromJson(response);
+  return <%- responseType%>.fromJson(response);
 }
 <% } %>
 

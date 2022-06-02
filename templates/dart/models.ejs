@@ -2,12 +2,12 @@
 import '../entity/entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part '<%= paramName%>.g.dart';
+part '<%- paramName%>.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class <%= paramName%> {
+class <%- paramName%> {
   <% parameters.forEach((item) => { %>
-    <%= generateParamProperty(item)%>
+    <%- generateParamProperty(item)%>
   <% }); %>
 
   <%
@@ -20,10 +20,10 @@ class <%= paramName%> {
   })
   %>
 
-  Params<%= upperOperationId%>(<%- parameters.length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}`: '' %>);
+  Params<%- upperOperationId%>(<%- parameters.length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}`: '' %>);
 
 
-  factory <%= paramName%>.fromJson(Map<String, dynamic> json) => _$<%= paramName%>FromJson(json);
+  factory <%- paramName%>.fromJson(Map<String, dynamic> json) => _$<%- paramName%>FromJson(json);
 
-  Map<String, dynamic> toJson() => _$<%= paramName%>ToJson(this);
+  Map<String, dynamic> toJson() => _$<%- paramName%>ToJson(this);
 }
