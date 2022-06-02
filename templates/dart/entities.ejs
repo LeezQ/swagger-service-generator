@@ -1,0 +1,36 @@
+// ignore_for_file: unused_import, non_constant_identifier_names
+import './entity.dart';
+import 'package:json_annotation/json_annotation.dart';
+
+part '<%= replaceX(modelName)%>.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class <%- upperCaseFirstLetter(modelName)%> {
+
+<%
+let _properties = '';
+Object.keys(properties).forEach((_key) => {
+  _properties += `
+  ${generateModelProperty(properties[_key], _key, required)}
+`;
+});
+ %>
+
+<%- _properties %>
+
+<%
+let __CONSTRUCTOR_CONTENT__ = '';
+Object.keys(properties).forEach((_key) => {
+  let requiredFlag = _key === 'success' || required.includes(_key) ? true : false;
+  let requiredTxt = requiredFlag ? 'required' : '';
+  __CONSTRUCTOR_CONTENT__ += `
+  ${requiredTxt} this.${_key},
+`; });
+  %>
+
+  <%- upperCaseFirstLetter(modelName)%> (<%- Object.keys(properties).length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}` : '' -%>);
+
+factory <%= replaceX(modelName)%>.fromJson(Map<String, dynamic> json) => _$<%= replaceX(modelName)%>FromJson(json);
+
+Map<String, dynamic> toJson() => _$<%= replaceX(modelName)%>ToJson(this);
+}

@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "generate": "ts-node src/generate-template.ts",
+    "dart": "ts-node src/generate-dart.ts",
     "build": "rollup src/index.js -o dist/index.js",
     "tsc": "tsc -p tsconfig.json",
     "dev": "dtsgen  "

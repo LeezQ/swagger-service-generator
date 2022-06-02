@@ -1,0 +1,47 @@
+// ignore_for_file: unused_import, non_constant_identifier_names
+import '../entity/entity.dart';
+import '../models/model.dart';
+<%- request %>
+
+<% pathGroup.forEach((item) => { %>
+<%  const { apiInfo, url } = item;
+  const method = Object.keys(apiInfo)[0];
+  let { operationId, summary, parameters, responses } = apiInfo[method];
+
+  let upperOperationId = upperCaseFirstLetter(operationId);
+  operationId = operationId.replace(/_/g, '');
+
+  let paramsType = generateParamTypeName(upperOperationId);
+  let responseType = generateResponseTypeName(responses);
+
+  let _funcString = '';
+%>
+<% if (method === 'get') { %>
+/// <%- summary%>
+Future<<%= responseType%>> <%= operationId%>({
+  required <%= paramsType%> data,
+  bool refresh = false,
+  bool cacheDisk = false,
+}) async {
+  final response = await HttpUtil().get(
+    '<%= basePath === '/' ? '' : basePath %><%= url%>',
+    queryParameters: toJson(),
+    refresh: refresh,
+    cacheDisk: cacheDisk,
+  );
+  return <%= responseType%>.fromJson(response);
+}
+<% } else if (method === 'post') { %>
+/// <%= summary%>
+Future<<%= responseType%>> <%= operationId%>({
+  required <%= paramsType%> data,
+}) async {
+  final response = await HttpUtil().post(
+    '<%= basePath === '/' ? '' : basePath%><%= url%>',
+    toJson(),
+  );
+  return <%= responseType%>.fromJson(response);
+}
+<% } %>
+
+<% }); %>
