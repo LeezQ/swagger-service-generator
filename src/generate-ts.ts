@@ -11,7 +11,7 @@ require('colors');
 var _ = require('lodash');
 const { default: dtsgenerator, parseSchema } = require('dtsgenerator');
 
-const config = require(path.join(process.cwd(), './swagger.config.js'));
+const config = require(path.join(process.cwd(), './.swagger.config.js'));
 
 if (Array.isArray(config)) {
   config.forEach(async (config) => {
@@ -21,7 +21,6 @@ if (Array.isArray(config)) {
 
 //启动函数
 async function run(configItem: any) {
-  console.log(chalk.yellow(`读取json数据...`));
   let {
     swaggerPath,
     outDir,
@@ -115,7 +114,6 @@ async function run(configItem: any) {
           if (err) {
             return console.log(err);
           }
-          console.log(chalk.green(`types are generated.`));
         },
       );
     })

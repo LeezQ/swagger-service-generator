@@ -77,7 +77,6 @@ module.exports = [
     "swaggerPath": "./swaggerApiDashBoard.json",
     "outDir": "lib/services/",
     "fileNameRule": function (url) {
-      console.log(url);
       return 'dashboard';
     },
     "request": "import request from '@/services/request';",

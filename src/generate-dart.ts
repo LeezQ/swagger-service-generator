@@ -26,7 +26,7 @@ async function run() {
   } = config;
 
   const res = await getSwaggerJson(url);
-  const { paths, basePath, definitions } = res.data || {};
+  const { paths, basePath = '', definitions } = res.data || {};
   let pathGroups: {
     [key: string]: {
       url: string;

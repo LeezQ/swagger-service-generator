@@ -1,7 +1,10 @@
 src/
+templates/
 .vscode/
 .DS_Store
 node_modules/
 .prettierrc.js
-.swagger.config.json
+.swagger.config.*
+swagger.*
+api.*
 yarn.lock

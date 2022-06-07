@@ -8,8 +8,8 @@
     "generate": "ts-node src/generate-template.ts",
     "g-ts": "ts-node src/generate-ts.ts",
     "dart": "ts-node src/generate-dart.ts",
-    "build": "rollup src/index.js -o dist/index.js",
-    "tsc": "tsc -p tsconfig.json",
+    "build": "rollup --config rollup.config.js",
+    "tsc": "tsc -p tsconfig.json --outDir dist",
     "dev": "dtsgen  "
   },
   "author": "leezq",
