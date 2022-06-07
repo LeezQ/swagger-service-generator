@@ -1,14 +1,45 @@
-/// <reference path = "api.d.ts" />
-${request}
+/// <reference path = "<%=typingFileName%>" />
+<%- request %>
+<%_ pathGroup.forEach((item) => { _%>
+<%_
+  let { apiInfo, url } = item;
+  // remove url whitespace
 
-// ${summary}
-export async function ${operationId}(
-  params: ${paramsType},
+  const method = Object.keys(apiInfo)[0];
+  let { summary = '', operationId = '', parameters = {}, consumes = '' } = apiInfo[method];
+
+  let functionName = functionNameRule(url, operationId);
+  let _method = '.' + upperCaseFirstLetter(method);
+  if (operationId !== '') {
+    _method = '';
+  }
+
+  let upperCaseFunctionName = upperCaseFirstLetter(functionName);
+
+  let paramsType = '';
+
+  if (_.find(parameters, { in: 'query' })) {
+    paramsType = `Paths.${upperCaseFunctionName}${upperCaseFirstLetter(_method)}.QueryParameters`;
+  } else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
+    const name = _.find(parameters, { in: 'body' }).name;
+    paramsType = `Paths.${upperCaseFunctionName}${upperCaseFirstLetter(_method)}.Parameters.${upperCaseFirstLetter(
+      name,
+    )}`;
+  } else {
+    paramsType = `{}`;
+  }
+
+  let responseType = `Paths.${upperCaseFunctionName}${upperCaseFirstLetter(_method)}.Responses.$200`;
+%>
+// <%-summary%>
+export async function <%=functionName%>(
+  params: <%=paramsType%>,
   extra?: { [key: string]: any },
-): Promise<${responseType}> {
-  return request('${basePath === '/' ? '' : basePath}${url}', {
-    method: '${method.toUpperCase()}',
+): Promise<<%=responseType%>> {
+  return request('<%=(basePath === '/' || basePath === '') ? '' : basePath%><%=url%>', {
+    method: '<%=method.toUpperCase()%>',
     data: params,
     ...(extra || {}),
   });
 }
+<%_ }) %>

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const chalk_1 = tslib_1.__importDefault(require("chalk"));
 const ejs_1 = tslib_1.__importDefault(require("ejs"));
+const getSwaggerJson_1 = tslib_1.__importDefault(require("./utils/getSwaggerJson"));
 //引入依赖
 var fs = require('fs');
 var child_process = require('child_process');
@@ -16,8 +17,8 @@ function run() {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.log(chalk_1.default.green(`读取json数据......`));
         const { url, outDir = './services/', modelDir = './models/', request = ``, filePathReg = '/(.*?)/', fileNameReg, } = config;
-        const res = yield getData(url);
-        const { paths, basePath, definitions } = res.data;
+        const res = yield (0, getSwaggerJson_1.default)(url);
+        const { paths, basePath, definitions } = res.data || {};
         let pathGroups = {};
         _.map(paths, (item, urlPath) => {
             const groupKeyMatch = urlPath.match(new RegExp(filePathReg));
@@ -55,12 +56,6 @@ function run() {
         console.log(chalk_1.default.green('pub run build_runner...'));
         child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
         console.log(chalk_1.default.green('生成完成'));
-    });
-}
-//获取swagger.json数据
-function getData(url) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        return yield axios({ url: url, method: 'get' });
     });
 }
 function upperCaseFirstLetter(str) {

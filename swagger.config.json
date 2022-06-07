@@ -1,7 +1,0 @@
-{
-  "url": "http://api.pone.duomimall.com/v2/api-docs",
-  "outDir": "lib/services",
-  "modelDir": "lib/models",
-  "filePathReg": "/api/(.*?)/",
-  "request": "import 'package:duomi_flutter/common/utils/utils.dart';"
-}

@@ -13,7 +13,7 @@ const config = require(path.join(process.cwd(), './swagger.config.json'));
 async function run() {
   console.log(`读取json数据......`.yellow);
   console.log(`config......${JSON.stringify(config)}`.green);
-  const { url, outDir, request = `import request from 'umi-request';`, filePathReg = '/(.*?)/' } = config;
+  const { url, outDir, request = `import request from 'umi-request';`, fileNameReg = '/(.*?)/' } = config;
   const apiPath = path.join(process.cwd(), outDir); //存放api文件地址
   if (!fs.existsSync(apiPath)) {
     // mkdir -p
@@ -23,7 +23,7 @@ async function run() {
   const { paths, basePath } = res.data;
   let pathGroups = {};
   _.map(paths, (item, urlPath) => {
-    const groupKey = urlPath.match(new RegExp(filePathReg))[1] || 'default';
+    const groupKey = urlPath.match(new RegExp(fileNameReg))[1] || 'default';
     if (Object.keys(pathGroups).includes(groupKey)) {
       pathGroups[groupKey].push({
         url: urlPath,

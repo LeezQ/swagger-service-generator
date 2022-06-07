@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import ejs from 'ejs';
+import getSwaggerJson from './utils/getSwaggerJson';
 
 //引入依赖
 var fs = require('fs');
@@ -24,8 +25,8 @@ async function run() {
     fileNameReg,
   } = config;
 
-  const res = await getData(url);
-  const { paths, basePath, definitions } = res.data;
+  const res = await getSwaggerJson(url);
+  const { paths, basePath, definitions } = res.data || {};
   let pathGroups: {
     [key: string]: {
       url: string;
@@ -72,11 +73,6 @@ async function run() {
   console.log(chalk.green('pub run build_runner...'));
   child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
   console.log(chalk.green('生成完成'));
-}
-
-//获取swagger.json数据
-async function getData(url: string) {
-  return await axios({ url: url, method: 'get' });
 }
 
 function upperCaseFirstLetter(str: string) {
