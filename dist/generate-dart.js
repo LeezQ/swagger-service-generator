@@ -4,36 +4,51 @@ const tslib_1 = require("tslib");
 const chalk_1 = tslib_1.__importDefault(require("chalk"));
 const ejs_1 = tslib_1.__importDefault(require("ejs"));
 const getSwaggerJson_1 = tslib_1.__importDefault(require("./utils/getSwaggerJson"));
-//引入依赖
-var fs = require('fs');
-var child_process = require('child_process');
-var path = require('path');
-require('colors');
-var axios = require('axios');
-var _ = require('lodash');
-const config = require(path.join(process.cwd(), './swagger.config.json'));
+const fs_1 = tslib_1.__importDefault(require("fs"));
+const path_1 = tslib_1.__importDefault(require("path"));
+const _ = tslib_1.__importStar(require("lodash"));
+const lodash_1 = require("lodash");
+const urlToCamelCase_1 = tslib_1.__importDefault(require("./utils/urlToCamelCase"));
+const child_process_1 = tslib_1.__importDefault(require("child_process"));
+function goGenerate() {
+    const config = require(path_1.default.join(process.cwd(), './.swagger.config.js'));
+    if (Array.isArray(config)) {
+        config.forEach((config) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield run(config);
+        }));
+    }
+}
+goGenerate();
 //启动函数
-function run() {
+function run(configItem) {
+    var _a;
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         console.log(chalk_1.default.green(`读取json数据......`));
-        const { url, outDir = './services/', modelDir = './models/', request = ``, filePathReg = '/(.*?)/', fileNameReg, } = config;
-        const res = yield (0, getSwaggerJson_1.default)(url);
-        const { paths, basePath = '', definitions } = res.data || {};
+        let { swaggerPath, outDir = 'lib/', basePath = '/', request = `import request from 'umi-request';`, fileNameRule = (url) => {
+            return (url.split('/') || [])[1] || 'index';
+        }, functionNameRule = (url, operationId) => {
+            if (operationId !== '') {
+                return (0, urlToCamelCase_1.default)(operationId);
+            }
+            return (0, urlToCamelCase_1.default)(url.replace(/^\//, ''));
+        }, whiteList, } = configItem;
+        const res = yield (0, getSwaggerJson_1.default)(swaggerPath);
+        const { paths, definitions } = res.data || {};
+        basePath = typeof basePath !== 'undefined' ? basePath : (_a = res.data) === null || _a === void 0 ? void 0 : _a.basePath;
         let pathGroups = {};
         _.map(paths, (item, urlPath) => {
-            const groupKeyMatch = urlPath.match(new RegExp(filePathReg));
-            let groupKey = '';
-            if (groupKeyMatch) {
-                groupKey = groupKeyMatch[1] || 'default';
+            if (whiteList && !whiteList.includes(urlPath)) {
+                return;
             }
-            if (Object.keys(pathGroups).includes(groupKey)) {
-                (pathGroups[groupKey] || []).push({
+            let fileName = fileNameRule(urlPath);
+            if (Object.keys(pathGroups).includes(fileName)) {
+                pathGroups[fileName].push({
                     url: urlPath,
                     apiInfo: item,
                 });
             }
             else {
-                pathGroups[groupKey] = [
+                pathGroups[fileName] = [
                     {
                         url: urlPath,
                         apiInfo: item,
@@ -42,25 +57,21 @@ function run() {
             }
         });
         console.log(chalk_1.default.green('开始生成 service...'));
-        genetateService(pathGroups, fileNameReg, request, basePath, outDir);
+        genetateService(pathGroups, fileNameRule, functionNameRule, request, basePath, outDir);
         console.log(chalk_1.default.green('done! service...'));
         console.log(chalk_1.default.green('开始生成 models...'));
-        generateParamModel(pathGroups, modelDir);
+        generateParamModel(pathGroups, outDir);
         console.log(chalk_1.default.green('done! '));
         console.log(chalk_1.default.green('开始生成 entity...'));
-        generateEntity(definitions);
+        generateEntity(definitions, outDir);
         console.log(chalk_1.default.green('done!'));
         console.log(chalk_1.default.green('format dart code...'));
-        child_process.execSync(`dart format ${path.join(process.cwd(), 'lib')}`);
+        child_process_1.default.execSync(`dart format ${path_1.default.join(process.cwd(), 'lib')}`);
         console.log(chalk_1.default.green('done!'));
         console.log(chalk_1.default.green('pub run build_runner...'));
-        child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
+        child_process_1.default.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
         console.log(chalk_1.default.green('生成完成'));
     });
-}
-function upperCaseFirstLetter(str) {
-    str = replaceX(str);
-    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 function replaceX(str) {
     if (!str) {
@@ -157,53 +168,66 @@ function generateParamTypeName(upperOperationId) {
     return paramName;
 }
 function generateResponseTypeName(responses) {
-    const res200 = responses['200'];
-    const { schema = {}, description } = res200;
-    const { $ref } = schema;
+    const $ref = _.get(responses, '200.schema.$ref');
     return replaceX($ref);
 }
-function genetateService(pathGroups, fileNameReg, request, basePath, outDir) {
-    const apiPath = path.join(process.cwd(), outDir); //存放api文件地址
-    if (!fs.existsSync(apiPath)) {
+function genetateService(pathGroups, fileNameRule, functionNameRule, request, basePath, outDir) {
+    const apiPath = path_1.default.join(process.cwd(), outDir + '/services/'); //存放api文件地址
+    if (!fs_1.default.existsSync(apiPath)) {
         // mkdir -p
-        fs.mkdirSync(apiPath, { recursive: true });
+        fs_1.default.mkdirSync(apiPath, { recursive: true });
     }
     _.map(pathGroups, (pathGroup, groupKey) => {
-        const fileName = (fileNameReg ? fileNameReg.replace(/\$1/g, groupKey) : groupKey) + '.dart';
+        pathGroup = pathGroup.map((item) => {
+            let { apiInfo, url } = item;
+            const method = Object.keys(apiInfo)[0];
+            let { operationId, summary, responses } = apiInfo[method];
+            operationId = operationId.replace(/[\s|_]/g, '');
+            let functionName = functionNameRule(url, operationId);
+            let upperOperationId = (0, lodash_1.upperFirst)(operationId);
+            let paramsType = generateParamTypeName(upperOperationId);
+            let responseType = generateResponseTypeName(responses);
+            return {
+                url,
+                summary,
+                paramsType,
+                responseType,
+                method,
+                functionName,
+            };
+        });
         // 生成 view
-        ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/services.ejs'), {
+        ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/services.ejs'), {
             pathGroup: pathGroup,
             request: request || '',
             basePath,
-            upperCaseFirstLetter,
-            generateParamTypeName,
-            generateResponseTypeName,
         }, {}, function (err, str) {
             if (err) {
                 console.log(chalk_1.default.red(err.toString()));
             }
-            fs.writeFileSync(path.join(apiPath, fileName), str);
-            // successLog(path.join(genetatePathDir, `view.dart`));
+            fs_1.default.writeFileSync(path_1.default.join(apiPath, groupKey + '.dart'), str);
+            console.log(chalk_1.default.green(`渲染成功：${groupKey + '.dart'}`));
         });
     });
 }
-function generateParamModel(pathGroups, modelDir) {
-    const modelDirPath = path.join(process.cwd(), modelDir); //存放api文件地址
-    if (!fs.existsSync(modelDirPath)) {
-        fs.mkdirSync(modelDirPath, { recursive: true });
+function generateParamModel(pathGroups, outDir) {
+    const modelDirPath = path_1.default.join(process.cwd(), outDir + '/models'); //存放api文件地址
+    if (!fs_1.default.existsSync(modelDirPath)) {
+        fs_1.default.mkdirSync(modelDirPath, { recursive: true });
     }
     const allParamName = [];
     _.map(pathGroups, (pathGroup) => {
         pathGroup.forEach((item) => {
             const { apiInfo } = item;
             let { operationId, parameters = [] } = apiInfo[Object.keys(apiInfo)[0]];
-            const upperOperationId = upperCaseFirstLetter(operationId);
-            const paramName = `Params${upperCaseFirstLetter(operationId)}`;
+            operationId = replaceX(operationId);
+            const upperOperationId = (0, lodash_1.upperFirst)(operationId);
+            const paramName = `Params${(0, lodash_1.upperFirst)(operationId)}`;
             if (!allParamName.includes(paramName)) {
                 allParamName.push(paramName);
             }
             // 生成 model
-            ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/models.ejs'), {
+            ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/models.ejs'), {
                 paramName: paramName,
                 upperOperationId: upperOperationId,
                 parameters: parameters,
@@ -212,45 +236,41 @@ function generateParamModel(pathGroups, modelDir) {
                 if (err) {
                     console.log(chalk_1.default.red(err.toString()));
                 }
-                fs.writeFileSync(path.join(modelDirPath, paramName + '.dart'), str);
+                fs_1.default.writeFileSync(path_1.default.join(modelDirPath, paramName + '.dart'), str);
                 // successLog(path.join(genetatePathDir, `view.dart`));
             });
         });
     });
     // 生成 model index
-    ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/models_index.ejs'), {
+    ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/models_index.ejs'), {
         allParamName: allParamName,
-        replaceX: replaceX,
     }, {}, function (err, str) {
         if (err) {
             console.log(chalk_1.default.red(err.toString()));
         }
-        fs.writeFileSync(path.join(modelDirPath, `model.dart`), str);
+        fs_1.default.writeFileSync(path_1.default.join(modelDirPath, `model.dart`), str);
         // successLog(path.join(genetatePathDir, `view.dart`));
     });
 }
-function generateEntity(definitions, entityPath = 'lib/entity/') {
-    const entityDir = path.join(process.cwd(), entityPath); //存放api文件地址
-    if (!fs.existsSync(entityDir)) {
+function generateEntity(definitions, outDir) {
+    const entityDir = path_1.default.join(process.cwd(), outDir + '/entity'); //存放api文件地址
+    if (!fs_1.default.existsSync(entityDir)) {
         // mkdir -p
-        fs.mkdirSync(entityDir, { recursive: true });
+        fs_1.default.mkdirSync(entityDir, { recursive: true });
     }
     Object.keys(definitions).forEach((modelName) => {
-        const { type, required = [], properties = {}, title } = definitions[modelName];
+        const { required = [], properties = {} } = definitions[modelName];
         // 生成 entities
-        ejs_1.default.renderFile(path.join(__dirname, '../templates/dart/entities.ejs'), {
-            modelName,
+        ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/entities.ejs'), {
+            modelName: replaceX(modelName),
             required,
             properties,
-            replaceX: replaceX,
-            upperCaseFirstLetter,
             generateModelProperty,
         }, {}, function (err, str) {
             if (err) {
                 console.log(chalk_1.default.red(err.toString()));
             }
-            fs.writeFileSync(path.join(entityDir, `${replaceX(modelName)}.dart`), str);
+            fs_1.default.writeFileSync(path_1.default.join(entityDir, `${replaceX(modelName)}.dart`), str);
         });
     });
 }
-run();

@@ -2,10 +2,10 @@
 import './entity.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part '<%- replaceX(modelName)%>.g.dart';
+part '<%- modelName%>.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class <%- upperCaseFirstLetter(modelName)%> {
+class <%- modelName%> {
 
 <%
 let _properties = '';
@@ -28,9 +28,9 @@ Object.keys(properties).forEach((_key) => {
 `; });
   %>
 
-  <%- upperCaseFirstLetter(modelName)%> (<%- Object.keys(properties).length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}` : '' -%>);
+  <%- modelName%> (<%- Object.keys(properties).length > 0 ? `{${__CONSTRUCTOR_CONTENT__}}` : '' -%>);
 
-factory <%- replaceX(modelName)%>.fromJson(Map<String, dynamic> json) => _$<%- replaceX(modelName)%>FromJson(json);
+factory <%- modelName%>.fromJson(Map<String, dynamic> json) => _$<%- modelName%>FromJson(json);
 
-Map<String, dynamic> toJson() => _$<%- replaceX(modelName)%>ToJson(this);
+Map<String, dynamic> toJson() => _$<%- modelName%>ToJson(this);
 }

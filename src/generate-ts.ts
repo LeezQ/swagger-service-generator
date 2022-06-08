@@ -2,39 +2,111 @@ import chalk from 'chalk';
 import ejs from 'ejs';
 import getSwaggerJson from './utils/getSwaggerJson';
 import urlToCamelCase from './utils/urlToCamelCase';
+import fs from 'fs';
+import path from 'path';
+import * as _ from 'lodash';
+import refToType from './utils/refToType';
+import { upperFirst } from 'lodash';
 
-//引入依赖
-var fs = require('fs');
-
-var path = require('path');
-require('colors');
-var _ = require('lodash');
 const { default: dtsgenerator, parseSchema } = require('dtsgenerator');
 
-const config = require(path.join(process.cwd(), './.swagger.config.js'));
+type ApiDocType = {
+  type: 'swagger' | 'openapi' | 'other';
+  version: string;
+};
 
-if (Array.isArray(config)) {
-  config.forEach(async (config) => {
-    await run(config);
-  });
+function goGenerate() {
+  const config = require(path.join(process.cwd(), './.swagger.config.js'));
+
+  if (Array.isArray(config)) {
+    config.forEach(async (config) => {
+      await run(config);
+    });
+  }
 }
 
-//启动函数
+goGenerate();
+
 async function run(configItem: any) {
   let {
     swaggerPath,
-    outDir,
-    basePath,
+    outDir = 'src/services',
+    basePath = '/',
     typingFileName = 'api.d.ts',
     request = `import request from 'umi-request';`,
-    fileNameRule = function (url: string) {
-      return url.split('/').pop();
+    fileNameRule = (url: string) => {
+      return (url.split('/') || [])[1] || 'index';
     },
-    functionNameRule = function (url: string, operationId: string) {
+    functionNameRule = (url: string, operationId: string) => {
       if (operationId !== '') {
         return urlToCamelCase(operationId);
       }
       return urlToCamelCase(url.replace(/^\//, ''));
+    },
+    parseType = (apiInfo: any, method: string, functionName: string, apiDocType: ApiDocType) => {
+      let paramsType = 'any';
+      let responseType = 'any';
+
+      if (apiDocType.type === 'swagger') {
+        let paramsTypeSchema = _.get(apiInfo, `${method}.parameters[0].schema`);
+        let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.schema`);
+
+        let parameters = _.get(apiInfo, `${method}.parameters`);
+        let operationId = _.get(apiInfo, `${method}.operationId`);
+        if (!operationId) {
+          operationId = `${_.upperFirst(functionName)}${_.upperFirst(method)}`;
+        }
+
+        if (paramsTypeSchema) {
+          paramsType = refToType(paramsTypeSchema);
+        } else {
+          if (_.find(parameters, { in: 'query' })) {
+            paramsType = `Paths.${upperFirst(operationId)}.QueryParameters`;
+          } else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
+            const name = _.find(parameters, { in: 'body' }).name;
+            paramsType = `Paths.${upperFirst(operationId)}.Parameters.${upperFirst(name)},
+            )}`;
+          } else {
+            paramsType = `{}`;
+          }
+        }
+
+        if (responsesTypeSchema) {
+          responseType = refToType(responsesTypeSchema);
+        }
+      } else if (apiDocType.type === 'openapi') {
+        let paramsTypeSchema = _.get(apiInfo, `${method}.requestBody.content.application/json.schema`);
+
+        let parameters = _.get(apiInfo, `${method}.parameters`);
+        let operationId = _.get(apiInfo, `${method}.operationId`);
+        if (!operationId) {
+          operationId = `${_.upperFirst(functionName)}${_.upperFirst(method)}`;
+        }
+
+        if (paramsTypeSchema) {
+          paramsType = refToType(paramsTypeSchema);
+        } else {
+          if (_.find(parameters, { in: 'query' })) {
+            paramsType = `Paths.${upperFirst(operationId)}.QueryParameters`;
+          } else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
+            const name = _.find(parameters, { in: 'body' }).name;
+            paramsType = `Paths.${upperFirst(operationId)}.Parameters.${upperFirst(name)},
+            )}`;
+          } else {
+            paramsType = `{}`;
+          }
+        }
+
+        let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.content.*/*.schema`);
+        if (responsesTypeSchema) {
+          responseType = refToType(responsesTypeSchema);
+        }
+      }
+
+      return {
+        paramsType,
+        responseType,
+      };
     },
     whiteList,
   } = configItem;
@@ -45,6 +117,20 @@ async function run(configItem: any) {
   }
   const res = await getSwaggerJson(swaggerPath);
   const { paths } = res.data || {};
+
+  let apiDocType: ApiDocType;
+
+  if (res.data?.swagger) {
+    apiDocType = {
+      type: 'swagger',
+      version: res.data?.swagger,
+    };
+  } else if (res.data?.openapi) {
+    apiDocType = {
+      type: 'openapi',
+      version: res.data?.openapi,
+    };
+  }
 
   basePath = typeof basePath !== 'undefined' ? basePath : res.data?.basePath;
 
@@ -77,6 +163,26 @@ async function run(configItem: any) {
   });
 
   _.map(pathGroups, (pathGroup: any[], groupKey: any) => {
+    pathGroup = pathGroup.map((item: any) => {
+      let { apiInfo, url } = item;
+      const method = Object.keys(apiInfo)[0];
+      let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
+
+      let functionName = functionNameRule(url, operationId);
+
+      let { paramsType, responseType } = parseType(apiInfo, method, functionName, apiDocType);
+
+      return {
+        url,
+        summary,
+        paramsType,
+        responseType,
+        consumes,
+        method,
+        functionName,
+      };
+    });
+
     ejs.renderFile(
       path.join(__dirname, '../templates/ts/function_service.ejs'),
       {
@@ -84,10 +190,8 @@ async function run(configItem: any) {
         basePath,
         typingFileName,
         pathGroup,
-        urlToCamelCase,
-        upperCaseFirstLetter,
         functionNameRule: functionNameRule,
-        _,
+        functionName: '',
       },
       {},
       (err: any, data: any) => {
@@ -120,8 +224,4 @@ async function run(configItem: any) {
     .catch((err: any) => {
       console.log(err);
     });
-}
-
-function upperCaseFirstLetter(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

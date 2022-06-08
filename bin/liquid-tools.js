@@ -17,8 +17,9 @@ program
     console.log(type);
     if (type === 'typescript') {
       require('../dist/generate-ts');
+    } else if (type === 'dart') {
+      require('../dist/generate-dart');
     }
-
   });
 
 program.parse(process.argv);

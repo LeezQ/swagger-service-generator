@@ -1,5 +1,5 @@
 library model;
 
 <%  allParamName.forEach((modelName) => { -%>
-  export './<%- replaceX(modelName)%>.dart';
+  export './<%- modelName%>.dart';
 <% }); %>

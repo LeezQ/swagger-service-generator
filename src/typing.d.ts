@@ -22,7 +22,8 @@ export type ApiInfo = {
 };
 
 export type SwaggerJson = {
-  swagger: string;
+  swagger?: string;
+  openapi?: string;
   info: {
     title: string;
     version: string;
@@ -66,6 +67,26 @@ export type SwaggerJson = {
           description?: string;
           required?: boolean;
         }[];
+        response?: {
+          [key: string]: {
+            description: string;
+            schema: {
+              $ref: string;
+            };
+          };
+        };
+        requestBody?: {
+          description: string;
+          content: {
+            [key: string]: {
+              schema: {
+                $ref: string;
+
+                type: string;
+              };
+            };
+          };
+        };
         consumes?: string[];
       };
     };

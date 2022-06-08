@@ -1,32 +1,50 @@
 import chalk from 'chalk';
 import ejs from 'ejs';
 import getSwaggerJson from './utils/getSwaggerJson';
+import fs from 'fs';
+import path from 'path';
+import * as _ from 'lodash';
+import { upperFirst } from 'lodash';
+import urlToCamelCase from './utils/urlToCamelCase';
+import child_process from 'child_process';
 
-//引入依赖
-var fs = require('fs');
-var child_process = require('child_process');
+function goGenerate() {
+  const config = require(path.join(process.cwd(), './.swagger.config.js'));
 
-var path = require('path');
-require('colors');
-var axios = require('axios');
-var _ = require('lodash');
+  if (Array.isArray(config)) {
+    config.forEach(async (config) => {
+      await run(config);
+    });
+  }
+}
 
-const config = require(path.join(process.cwd(), './swagger.config.json'));
+goGenerate();
 
 //启动函数
-async function run() {
+async function run(configItem: any) {
   console.log(chalk.green(`读取json数据......`));
-  const {
-    url,
-    outDir = './services/',
-    modelDir = './models/',
-    request = ``,
-    filePathReg = '/(.*?)/',
-    fileNameReg,
-  } = config;
+  let {
+    swaggerPath,
+    outDir = 'lib/',
+    basePath = '/',
+    request = `import request from 'umi-request';`,
+    fileNameRule = (url: string) => {
+      return (url.split('/') || [])[1] || 'index';
+    },
+    functionNameRule = (url: string, operationId: string) => {
+      if (operationId !== '') {
+        return urlToCamelCase(operationId);
+      }
+      return urlToCamelCase(url.replace(/^\//, ''));
+    },
+    whiteList,
+  } = configItem;
 
-  const res = await getSwaggerJson(url);
-  const { paths, basePath = '', definitions } = res.data || {};
+  const res = await getSwaggerJson(swaggerPath);
+  const { paths, definitions } = res.data || {};
+
+  basePath = typeof basePath !== 'undefined' ? basePath : res.data?.basePath;
+
   let pathGroups: {
     [key: string]: {
       url: string;
@@ -34,18 +52,18 @@ async function run() {
     }[];
   } = {};
   _.map(paths, (item: any, urlPath: string) => {
-    const groupKeyMatch = urlPath.match(new RegExp(filePathReg));
-    let groupKey = '';
-    if (groupKeyMatch) {
-      groupKey = groupKeyMatch[1] || 'default';
+    if (whiteList && !whiteList.includes(urlPath)) {
+      return;
     }
-    if (Object.keys(pathGroups).includes(groupKey)) {
-      (pathGroups[groupKey] || []).push({
+    let fileName = fileNameRule(urlPath);
+
+    if (Object.keys(pathGroups).includes(fileName)) {
+      pathGroups[fileName].push({
         url: urlPath,
         apiInfo: item,
       });
     } else {
-      pathGroups[groupKey] = [
+      pathGroups[fileName] = [
         {
           url: urlPath,
           apiInfo: item,
@@ -55,15 +73,15 @@ async function run() {
   });
 
   console.log(chalk.green('开始生成 service...'));
-  genetateService(pathGroups, fileNameReg, request, basePath, outDir);
+  genetateService(pathGroups, fileNameRule, functionNameRule, request, basePath, outDir);
   console.log(chalk.green('done! service...'));
 
   console.log(chalk.green('开始生成 models...'));
-  generateParamModel(pathGroups, modelDir);
+  generateParamModel(pathGroups, outDir);
   console.log(chalk.green('done! '));
 
   console.log(chalk.green('开始生成 entity...'));
-  generateEntity(definitions);
+  generateEntity(definitions, outDir);
   console.log(chalk.green('done!'));
 
   console.log(chalk.green('format dart code...'));
@@ -73,11 +91,6 @@ async function run() {
   console.log(chalk.green('pub run build_runner...'));
   child_process.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
   console.log(chalk.green('生成完成'));
-}
-
-function upperCaseFirstLetter(str: string) {
-  str = replaceX(str);
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function replaceX(str: string) {
@@ -196,26 +209,47 @@ function generateParamTypeName(upperOperationId: string) {
 }
 
 function generateResponseTypeName(responses: { [x: string]: any }) {
-  const res200 = responses['200'];
-  const { schema = {}, description } = res200;
-  const { $ref } = schema;
+  const $ref = _.get(responses, '200.schema.$ref');
   return replaceX($ref);
 }
 
 function genetateService(
   pathGroups: { [key: string]: { url: string; apiInfo: any }[] },
-  fileNameReg: string,
+  fileNameRule: (url: string) => string,
+  functionNameRule: (url: string, operationId: string) => string,
   request: any,
   basePath: string,
   outDir: any,
 ) {
-  const apiPath = path.join(process.cwd(), outDir); //存放api文件地址
+  const apiPath = path.join(process.cwd(), outDir + '/services/'); //存放api文件地址
   if (!fs.existsSync(apiPath)) {
     // mkdir -p
     fs.mkdirSync(apiPath, { recursive: true });
   }
   _.map(pathGroups, (pathGroup: any[], groupKey: string) => {
-    const fileName = (fileNameReg ? fileNameReg.replace(/\$1/g, groupKey) : groupKey) + '.dart';
+    pathGroup = pathGroup.map((item: any) => {
+      let { apiInfo, url } = item;
+      const method = Object.keys(apiInfo)[0];
+      let { operationId, summary, responses } = apiInfo[method];
+
+      operationId = operationId.replace(/[\s|_]/g, '');
+
+      let functionName = functionNameRule(url, operationId);
+
+      let upperOperationId = upperFirst(operationId);
+
+      let paramsType = generateParamTypeName(upperOperationId);
+      let responseType = generateResponseTypeName(responses);
+
+      return {
+        url,
+        summary,
+        paramsType,
+        responseType,
+        method,
+        functionName,
+      };
+    });
 
     // 生成 view
     ejs.renderFile(
@@ -224,24 +258,21 @@ function genetateService(
         pathGroup: pathGroup,
         request: request || '',
         basePath,
-        upperCaseFirstLetter,
-        generateParamTypeName,
-        generateResponseTypeName,
       },
       {},
       function (err, str) {
         if (err) {
           console.log(chalk.red(err.toString()));
         }
-        fs.writeFileSync(path.join(apiPath, fileName), str);
-        // successLog(path.join(genetatePathDir, `view.dart`));
+        fs.writeFileSync(path.join(apiPath, groupKey + '.dart'), str);
+        console.log(chalk.green(`渲染成功：${groupKey + '.dart'}`));
       },
     );
   });
 }
 
-function generateParamModel(pathGroups: { [key: string]: { url: string; apiInfo: any }[] }, modelDir: any) {
-  const modelDirPath = path.join(process.cwd(), modelDir); //存放api文件地址
+function generateParamModel(pathGroups: { [key: string]: { url: string; apiInfo: any }[] }, outDir: any) {
+  const modelDirPath = path.join(process.cwd(), outDir + '/models'); //存放api文件地址
   if (!fs.existsSync(modelDirPath)) {
     fs.mkdirSync(modelDirPath, { recursive: true });
   }
@@ -250,8 +281,9 @@ function generateParamModel(pathGroups: { [key: string]: { url: string; apiInfo:
     pathGroup.forEach((item: { apiInfo: any }) => {
       const { apiInfo } = item;
       let { operationId, parameters = [] } = apiInfo[Object.keys(apiInfo)[0]];
-      const upperOperationId = upperCaseFirstLetter(operationId);
-      const paramName = `Params${upperCaseFirstLetter(operationId)}`;
+      operationId = replaceX(operationId);
+      const upperOperationId = upperFirst(operationId);
+      const paramName = `Params${upperFirst(operationId)}`;
 
       if (!allParamName.includes(paramName)) {
         allParamName.push(paramName);
@@ -283,7 +315,6 @@ function generateParamModel(pathGroups: { [key: string]: { url: string; apiInfo:
     path.join(__dirname, '../templates/dart/models_index.ejs'),
     {
       allParamName: allParamName,
-      replaceX: replaceX,
     },
     {},
     function (err, str) {
@@ -296,24 +327,22 @@ function generateParamModel(pathGroups: { [key: string]: { url: string; apiInfo:
   );
 }
 
-function generateEntity(definitions: any, entityPath = 'lib/entity/') {
-  const entityDir = path.join(process.cwd(), entityPath); //存放api文件地址
+function generateEntity(definitions: any, outDir: string) {
+  const entityDir = path.join(process.cwd(), outDir + '/entity'); //存放api文件地址
   if (!fs.existsSync(entityDir)) {
     // mkdir -p
     fs.mkdirSync(entityDir, { recursive: true });
   }
   Object.keys(definitions).forEach((modelName) => {
-    const { type, required = [], properties = {}, title } = definitions[modelName];
+    const { required = [], properties = {} } = definitions[modelName];
 
     // 生成 entities
     ejs.renderFile(
       path.join(__dirname, '../templates/dart/entities.ejs'),
       {
-        modelName,
+        modelName: replaceX(modelName),
         required,
         properties,
-        replaceX: replaceX,
-        upperCaseFirstLetter,
         generateModelProperty,
       },
       {},
@@ -326,5 +355,3 @@ function generateEntity(definitions: any, entityPath = 'lib/entity/') {
     );
   });
 }
-
-run();

@@ -4,21 +4,13 @@ import '../models/model.dart';
 <%- request %>
 
 <% pathGroup.forEach((item) => { %>
-<%  const { apiInfo, url } = item;
-  const method = Object.keys(apiInfo)[0];
-  let { operationId, summary, parameters, responses } = apiInfo[method];
-
-  let upperOperationId = upperCaseFirstLetter(operationId);
-  operationId = operationId.replace(/_/g, '');
-
-  let paramsType = generateParamTypeName(upperOperationId);
-  let responseType = generateResponseTypeName(responses);
-
-  let _funcString = '';
+<%_
+  let { url, summary, paramsType, responseType, consumes, method, functionName } = item;
 %>
+
 <% if (method === 'get') { %>
 /// <%- summary%>
-Future<<%- responseType%>> <%- operationId%>({
+Future<<%- responseType%>> <%- functionName%>({
   required <%- paramsType%> data,
   bool refresh = false,
   bool cacheDisk = false,
@@ -33,7 +25,7 @@ Future<<%- responseType%>> <%- operationId%>({
 }
 <% } else if (method === 'post') { %>
 /// <%- summary%>
-Future<<%- responseType%>> <%- operationId%>({
+Future<<%- responseType%>> <%- functionName%>({
   required <%- paramsType%> data,
 }) async {
   final response = await HttpUtil().post(
