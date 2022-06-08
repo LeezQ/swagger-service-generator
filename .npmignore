@@ -1,5 +1,4 @@
 src/
-templates/
 .vscode/
 .DS_Store
 node_modules/
@@ -7,4 +6,5 @@ node_modules/
 .swagger.config.*
 swagger.*
 api.*
+lib/
 yarn.lock

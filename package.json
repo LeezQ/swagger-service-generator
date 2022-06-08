@@ -1,16 +1,16 @@
 {
-  "name": "swagger-service-generator",
+  "name": "liquid-tools",
+  "bin": {
+    "liquid-tools": "bin/liquid-tools.js"
+  },
   "version": "1.1.0",
-  "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
     "generate": "ts-node src/generate-template.ts",
     "g-ts": "ts-node src/generate-ts.ts",
     "dart": "ts-node src/generate-dart.ts",
     "build": "rollup --config rollup.config.js",
-    "tsc": "tsc -p tsconfig.json --outDir dist",
-    "dev": "dtsgen  "
+    "tsc": "tsc -p tsconfig.json --outDir dist"
   },
   "author": "leezq",
   "license": "ISC",
@@ -36,5 +36,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "directories": {
+    "lib": "lib"
+  },
+  "description": ""
 }
