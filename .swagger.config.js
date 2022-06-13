@@ -7,18 +7,26 @@
 //   });
 // };
 module.exports = [
+  {
+    "swaggerPath": "http://121.40.238.63:8092/v2/api-docs",
+    "outDir": "lib/src/services",
+    "fileNameRule": function (url) {
+      return url.split('/')[2];
+    },
+    "request": "import request from '@/services/request';"
+  },
   // {
   //   swaggerPath: 'https://dev-api.jushuitan.com/fis/v3/api-docs',
   //   outDir: 'lib/services/fis',
   // },
-  {
-    swaggerPath: 'http://api.pone.duomimall.com/v2/api-docs',
-    outDir: 'lib/dart',
-    fileNameRule: (url) => {
-      return url.split('/')[2];
-    },
-    request: "import 'package:duomi_flutter/common/utils/utils.dart';"
-  },
+  // {
+  //   swaggerPath: 'http://api.pone.duomimall.com/v2/api-docs',
+  //   outDir: 'lib/dart',
+  //   fileNameRule: (url) => {
+  //     return url.split('/')[2];
+  //   },
+  //   request: "import 'package:duomi_flutter/common/utils/utils.dart';"
+  // },
   // {
   //   swaggerPath: 'https://dev-api.jushuitan.com/fis/v3/api-docs',
   //   outDir: 'lib/services/fis',

@@ -33,61 +33,35 @@ function run(configItem) {
         }, parseType = (apiInfo, method, functionName, apiDocType) => {
             let paramsType = 'any';
             let responseType = 'any';
-            if (apiDocType.type === 'swagger') {
-                let paramsTypeSchema = _.get(apiInfo, `${method}.parameters[0].schema`);
-                let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.schema`);
-                let parameters = _.get(apiInfo, `${method}.parameters`);
+            let parameters = _.get(apiInfo, `${method}.parameters`);
+            let paramsTypeSchema = _.get(apiInfo, `${method}.parameters[0].schema`);
+            let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.schema`);
+            if (apiDocType.type === 'openapi') {
+                paramsTypeSchema = _.get(apiInfo, `${method}.requestBody.content.application/json.schema`);
+                responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.content.*/*.schema`);
+            }
+            if (paramsTypeSchema) {
+                paramsType = (0, refToType_1.default)(paramsTypeSchema);
+            }
+            else {
                 let operationId = _.get(apiInfo, `${method}.operationId`);
                 if (!operationId) {
                     operationId = `${_.upperFirst(functionName)}${_.upperFirst(method)}`;
                 }
-                if (paramsTypeSchema) {
-                    paramsType = (0, refToType_1.default)(paramsTypeSchema);
+                if (_.find(parameters, { in: 'query' })) {
+                    paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.QueryParameters`;
+                }
+                else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
+                    const name = _.find(parameters, { in: 'body' }).name;
+                    paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.Parameters.${(0, lodash_1.upperFirst)(name)},
+          )}`;
                 }
                 else {
-                    if (_.find(parameters, { in: 'query' })) {
-                        paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.QueryParameters`;
-                    }
-                    else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
-                        const name = _.find(parameters, { in: 'body' }).name;
-                        paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.Parameters.${(0, lodash_1.upperFirst)(name)},
-            )}`;
-                    }
-                    else {
-                        paramsType = `{}`;
-                    }
-                }
-                if (responsesTypeSchema) {
-                    responseType = (0, refToType_1.default)(responsesTypeSchema);
+                    paramsType = `{}`;
                 }
             }
-            else if (apiDocType.type === 'openapi') {
-                let paramsTypeSchema = _.get(apiInfo, `${method}.requestBody.content.application/json.schema`);
-                let parameters = _.get(apiInfo, `${method}.parameters`);
-                let operationId = _.get(apiInfo, `${method}.operationId`);
-                if (!operationId) {
-                    operationId = `${_.upperFirst(functionName)}${_.upperFirst(method)}`;
-                }
-                if (paramsTypeSchema) {
-                    paramsType = (0, refToType_1.default)(paramsTypeSchema);
-                }
-                else {
-                    if (_.find(parameters, { in: 'query' })) {
-                        paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.QueryParameters`;
-                    }
-                    else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
-                        const name = _.find(parameters, { in: 'body' }).name;
-                        paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.Parameters.${(0, lodash_1.upperFirst)(name)},
-            )}`;
-                    }
-                    else {
-                        paramsType = `{}`;
-                    }
-                }
-                let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.content.*/*.schema`);
-                if (responsesTypeSchema) {
-                    responseType = (0, refToType_1.default)(responsesTypeSchema);
-                }
+            if (responsesTypeSchema) {
+                responseType = (0, refToType_1.default)(responsesTypeSchema);
             }
             return {
                 paramsType,

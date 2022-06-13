@@ -1,0 +1,16 @@
+declare namespace Definitions {
+  <%_ Object.keys(definitionsData).map((key) => { %>
+     export type <%=key%> = <%=definitionsData[key] %>
+  <%_})%>
+}
+
+declare namespace Paths {
+  <%_ Object.keys(pathsData).map((key) => { %>
+    namespace <%=pathsData[key].nameSpace%> {
+      export type QueryParameters = <%- pathsData[key].queryParamsType %>;
+      export type BodyParameters = <%- pathsData[key].bodyParamsType %>;
+      export type Responses = <%- pathsData[key].responsesType%>;
+    }
+  <%_})%>
+
+}

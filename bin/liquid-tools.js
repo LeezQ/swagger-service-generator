@@ -22,4 +22,16 @@ program
     }
   });
 
+program
+  .command('file-generate')
+  .option('-t, --type <type>', '类型')
+  .description('生成 file')
+  .action((options) => {
+    const { type } = options;
+    console.log(type);
+    if (type === 'getx') {
+      require('../dist/generate-template');
+    }
+  });
+
 program.parse(process.argv);
