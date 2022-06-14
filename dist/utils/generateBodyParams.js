@@ -10,7 +10,8 @@ function generateBodyParams(element) {
         let _type = '{';
         function getP(item) {
             // 递归
-            const { required } = item;
+            console.log(item);
+            const { required = [] } = item;
             lodash_1.default.map(item.properties, (propertyValue, propertyName) => {
                 const { type, description } = propertyValue;
                 if (type === 'object') {

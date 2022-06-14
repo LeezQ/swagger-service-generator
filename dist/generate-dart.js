@@ -127,7 +127,7 @@ function generateParamProperty(property) {
   ${res}
   `;
 }
-function generateModelProperty(property, name, required) {
+function generateModelProperty(property, name, required = []) {
     let { type, $ref, schema = {}, description, items = {} } = property;
     const _in = property.in || 'query';
     let originalRef = replaceX($ref);

@@ -164,7 +164,7 @@ function generateParamProperty(property: {
 function generateModelProperty(
   property: { in?: any; type?: any; $ref?: any; schema?: any; description?: any; items?: any },
   name: string,
-  required: string | any[],
+  required: string | any[] = [],
 ) {
   let { type, $ref, schema = {}, description, items = {} } = property;
   const _in = property.in || 'query';
