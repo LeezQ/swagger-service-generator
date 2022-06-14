@@ -5,10 +5,12 @@ import urlToCamelCase from './utils/urlToCamelCase';
 import fs from 'fs';
 import path from 'path';
 import * as _ from 'lodash';
-import generateQueryParams from './utils/generateQueryParams';
+import generateBodyParams from './utils/generateBodyParams';
 import generateProperties from './utils/generateProperties';
 import refToDefinition from './utils/refToDefinition';
 import replaceX from './utils/replaceX';
+import { upperFirst } from 'lodash';
+import generateQueryParams from './utils/generateQueryParams';
 
 function goGenerate() {
   const config = require(path.join(process.cwd(), './.swagger.config.js'));
@@ -49,7 +51,12 @@ async function run(configItem: any) {
 
 function generateTsTypes(configItem: any, res: { data?: import('./typing').SwaggerJson | undefined }) {
   const { outDir, typingFileName, functionNameRule, whiteList } = configItem;
-  const { paths, definitions = {} } = res.data || {};
+  let { paths, definitions = {}, components = { schemas: {} }, openapi, swagger } = res.data || {};
+
+  if (_.isEmpty(definitions)) {
+    definitions = components.schemas;
+  }
+
   const typeFilePath = path.join(process.cwd(), outDir); //存放api文件地址
   if (!fs.existsSync(typeFilePath)) {
     // mkdir -p
@@ -67,27 +74,40 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
     if (whiteList && !whiteList.includes(urlPath)) {
       return;
     }
+
     const method = Object.keys(item)[0];
 
-    const operationId = _.get(item, `${method}.operationId`);
-    const parameters = _.get(item, `${method}.parameters`, []);
+    let bodyParamsType = 'any';
+    let queryParamsType = 'any';
+    let responsesType = 'any';
 
-    // body params
-    const bodyParams = parameters.filter((item: any) => item.in === 'body');
-    let bodyParamsType = getTypeFromRef(_.get(bodyParams, '[0].schema.$ref')) || 'any';
+    let functionName = functionNameRule(urlPath, _.get(item, `${method}.operationId`));
 
-    // query params
-    const queryParams = parameters.filter((item: any) => item.in === 'query');
-    let queryParamsType = '{}';
-    if (queryParams.length > 0) {
-      queryParamsType = generateQueryParams(queryParams).join('');
+    if (swagger) {
+      const parameters = _.get(item, `${method}.parameters`, []);
+
+      // query params
+      const queryParams = parameters.filter((item: any) => item.in === 'query');
+      queryParamsType = generateQueryParams(queryParams);
+
+      // body params
+      const bodyParams = parameters.filter((item: any) => item.in === 'body');
+      bodyParamsType = generateBodyParams(bodyParams[0]);
+      addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
+
+      // responses params
+      let response = `${method}.responses.200`;
+      responsesType = generateBodyParams(_.get(item, `${response}`));
+      addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
+    } else if (openapi) {
+      let request = `${method}.requestBody.content.application/json`;
+      bodyParamsType = generateBodyParams(_.get(item, `${request}`));
+      addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
+
+      let response = `${method}.responses.200.content.*/*`;
+      responsesType = generateBodyParams(_.get(item, `${response}`));
+      addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
     }
-
-    // responses params
-    const responses = _.get(item, `${method}.responses`, []);
-    let responsesType = getTypeFromRef(_.get(responses, '200.schema.$ref')) || 'any';
-
-    let functionName = functionNameRule(urlPath, operationId);
 
     pathsData[functionName] = {
       nameSpace: _.upperFirst(functionName),
@@ -95,16 +115,6 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
       bodyParamsType,
       responsesType,
     };
-
-    if (_.get(bodyParams, '[0].schema.$ref')) {
-      let ref = _.get(bodyParams, '[0].schema.$ref');
-      _definitionsData[ref] = definitions[refToDefinition(ref)];
-    }
-
-    if (_.get(responses, '200.schema.$ref')) {
-      let ref = _.get(responses, '200.schema.$ref');
-      _definitionsData[ref] = definitions[refToDefinition(ref)];
-    }
   });
 
   function parseDefinition(properties: any, _defi: any) {
@@ -117,7 +127,7 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
           parseDefinition(definitions[refToDefinition(item.$ref)].properties, _defi);
         } else if (item.type === 'array') {
           if (item.items.$ref) {
-            _defi[item.items.$ref] = `${item.items.$ref ? definitions[refToDefinition(item.items.$ref)] : 'any'}[]`;
+            _defi[item.items.$ref] = definitions[refToDefinition(item.items.$ref)];
             parseDefinition(definitions[refToDefinition(item.items.$ref)].properties, _defi);
           }
         }
@@ -155,12 +165,116 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
   );
 }
 
-function getTypeFromRef(ref?: string) {
-  if (!ref) {
-    return;
+function generateTsServices(configItem: any, res: { data?: import('./typing').SwaggerJson | undefined }) {
+  let { outDir, basePath, typingFileName, request, fileNameRule, functionNameRule, whiteList } = configItem;
+  const apiPath = path.join(process.cwd(), outDir); //存放api文件地址
+  if (!fs.existsSync(apiPath)) {
+    // mkdir -p
+    fs.mkdirSync(apiPath, { recursive: true });
   }
+  const { paths, openapi, swagger } = res.data || {};
+
+  basePath = typeof basePath !== 'undefined' ? basePath : res.data?.basePath;
+
+  let pathGroups: {
+    [key: string]: {
+      url: string;
+      apiInfo: any;
+    }[];
+  } = {};
+  _.map(paths, (item: any, urlPath: string) => {
+    if (whiteList && !whiteList.includes(urlPath)) {
+      return;
+    }
+
+    let fileName = fileNameRule(urlPath);
+
+    if (Object.keys(pathGroups).includes(fileName)) {
+      pathGroups[fileName].push({
+        url: urlPath,
+        apiInfo: item,
+      });
+    } else {
+      pathGroups[fileName] = [
+        {
+          url: urlPath,
+          apiInfo: item,
+        },
+      ];
+    }
+  });
+
+  _.map(pathGroups, (pathGroup: any[], groupKey: any) => {
+    pathGroup = pathGroup.map((pathItem: any) => {
+      let { apiInfo, url } = pathItem;
+      const method = Object.keys(apiInfo)[0];
+      let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
+
+      let functionName = functionNameRule(url, operationId);
+
+      let queryParamsType = `any`;
+      let bodyParamsType = `any`;
+      let responsesType = `any`;
+
+      let item = pathItem.apiInfo;
+      if (swagger) {
+        const parameters = _.get(item, `${method}.parameters`, []);
+
+        // query params
+        const queryParams = parameters.filter((item: any) => item.in === 'query');
+        queryParamsType = generateQueryParams(queryParams);
+
+        // body params
+        const bodyParams = parameters.filter((item: any) => item.in === 'body');
+        bodyParamsType = generateBodyParams(bodyParams[0]);
+
+        // responses params
+        let response = `${method}.responses.200`;
+        responsesType = generateBodyParams(_.get(item, `${response}`));
+      } else if (openapi) {
+        let request = `${method}.requestBody.content.application/json`;
+        bodyParamsType = generateBodyParams(_.get(item, `${request}`));
+
+        let response = `${method}.responses.200.content.*/*`;
+        responsesType = generateBodyParams(_.get(item, `${response}`));
+      }
+
+      return {
+        url,
+        summary,
+        bodyParamsType: bodyParamsType === 'any' ? queryParamsType : bodyParamsType,
+        responsesType,
+        consumes,
+        method,
+        functionName,
+      };
+    });
+
+    ejs.renderFile(
+      path.join(__dirname, '../templates/ts/function_service.ejs'),
+      {
+        request,
+        basePath,
+        typingFileName,
+        pathGroup,
+        functionNameRule: functionNameRule,
+        functionName: '',
+      },
+      {},
+      (err: any, data: any) => {
+        if (err) {
+          console.log(chalk.red(`渲染失败：${err}`));
+        } else {
+          fs.writeFileSync(path.join(apiPath, groupKey + '.ts'), data);
+          console.log(chalk.green(`渲染成功：${groupKey + '.ts'}`));
+        }
+      },
+    );
+  });
+}
+
+function addDefinitionData(ref: any, _definitionsData: any, definitions: any) {
   if (ref) {
-    const bodyParamsSchemaRefType = replaceX(refToDefinition(ref));
-    return 'Definitions.' + bodyParamsSchemaRefType;
+    _definitionsData[ref] = definitions[refToDefinition(ref)];
   }
 }

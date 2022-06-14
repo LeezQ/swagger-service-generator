@@ -91,4 +91,23 @@ export type SwaggerJson = {
       };
     };
   };
+
+  components: {
+    schemas: {
+      [key: string]: {
+        type: string;
+        properties: {
+          [key: string]: {
+            type: string;
+            description?: string;
+            format?: string;
+            items?: {
+              $ref: string;
+            };
+            enum?: string[];
+          };
+        };
+      };
+    };
+  };
 };

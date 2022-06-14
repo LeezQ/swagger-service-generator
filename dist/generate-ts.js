@@ -8,9 +8,11 @@ const urlToCamelCase_1 = tslib_1.__importDefault(require("./utils/urlToCamelCase
 const fs_1 = tslib_1.__importDefault(require("fs"));
 const path_1 = tslib_1.__importDefault(require("path"));
 const _ = tslib_1.__importStar(require("lodash"));
-const refToType_1 = tslib_1.__importDefault(require("./utils/refToType"));
-const lodash_1 = require("lodash");
-const { default: dtsgenerator, parseSchema } = require('dtsgenerator');
+const generateBodyParams_1 = tslib_1.__importDefault(require("./utils/generateBodyParams"));
+const generateProperties_1 = tslib_1.__importDefault(require("./utils/generateProperties"));
+const refToDefinition_1 = tslib_1.__importDefault(require("./utils/refToDefinition"));
+const replaceX_1 = tslib_1.__importDefault(require("./utils/replaceX"));
+const generateQueryParams_1 = tslib_1.__importDefault(require("./utils/generateQueryParams"));
 function goGenerate() {
     const config = require(path_1.default.join(process.cwd(), './.swagger.config.js'));
     if (Array.isArray(config)) {
@@ -21,142 +23,201 @@ function goGenerate() {
 }
 goGenerate();
 function run(configItem) {
-    var _a, _b, _c, _d, _e;
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        let { swaggerPath, outDir = 'src/services', basePath = '/', typingFileName = 'api.d.ts', request = `import request from 'umi-request';`, fileNameRule = (url) => {
-            return (url.split('/') || [])[1] || 'index';
-        }, functionNameRule = (url, operationId) => {
-            if (operationId !== '') {
-                return (0, urlToCamelCase_1.default)(operationId);
-            }
-            return (0, urlToCamelCase_1.default)(url.replace(/^\//, ''));
-        }, parseType = (apiInfo, method, functionName, apiDocType) => {
-            let paramsType = 'any';
-            let responseType = 'any';
-            let parameters = _.get(apiInfo, `${method}.parameters`);
-            let paramsTypeSchema = _.get(apiInfo, `${method}.parameters[0].schema`);
-            let responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.schema`);
-            if (apiDocType.type === 'openapi') {
-                paramsTypeSchema = _.get(apiInfo, `${method}.requestBody.content.application/json.schema`);
-                responsesTypeSchema = _.get(apiInfo, `${method}.responses.200.content.*/*.schema`);
-            }
-            if (paramsTypeSchema) {
-                paramsType = (0, refToType_1.default)(paramsTypeSchema);
-            }
-            else {
-                let operationId = _.get(apiInfo, `${method}.operationId`);
-                if (!operationId) {
-                    operationId = `${_.upperFirst(functionName)}${_.upperFirst(method)}`;
+        const res = yield (0, getSwaggerJson_1.default)(configItem.swaggerPath);
+        configItem = Object.assign({ outDir: 'src/services', basePath: '/', typingFileName: 'api.d.ts', request: `import request from 'umi-request';`, fileNameRule: (url) => {
+                return (url.split('/') || [])[1] || 'index';
+            }, functionNameRule: (url, operationId) => {
+                if (operationId !== '') {
+                    return (0, urlToCamelCase_1.default)(operationId);
                 }
-                if (_.find(parameters, { in: 'query' })) {
-                    paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.QueryParameters`;
-                }
-                else if (_.find(parameters, { in: 'body' }) || _.find(parameters, { in: 'path' })) {
-                    const name = _.find(parameters, { in: 'body' }).name;
-                    paramsType = `Paths.${(0, lodash_1.upperFirst)(operationId)}.Parameters.${(0, lodash_1.upperFirst)(name)},
-          )}`;
-                }
-                else {
-                    paramsType = `{}`;
-                }
-            }
-            if (responsesTypeSchema) {
-                responseType = (0, refToType_1.default)(responsesTypeSchema);
-            }
-            return {
-                paramsType,
-                responseType,
-            };
-        }, whiteList, } = configItem;
-        const apiPath = path_1.default.join(process.cwd(), outDir); //存放api文件地址
-        if (!fs_1.default.existsSync(apiPath)) {
-            // mkdir -p
-            fs_1.default.mkdirSync(apiPath, { recursive: true });
+                return (0, urlToCamelCase_1.default)(url.replace(/^\//, ''));
+            } }, configItem);
+        generateTsServices(configItem, res);
+        generateTsTypes(configItem, res);
+    });
+}
+function generateTsTypes(configItem, res) {
+    const { outDir, typingFileName, functionNameRule, whiteList } = configItem;
+    let { paths, definitions = {}, components = { schemas: {} }, openapi, swagger } = res.data || {};
+    if (_.isEmpty(definitions)) {
+        definitions = components.schemas;
+    }
+    const typeFilePath = path_1.default.join(process.cwd(), outDir); //存放api文件地址
+    if (!fs_1.default.existsSync(typeFilePath)) {
+        // mkdir -p
+        fs_1.default.mkdirSync(typeFilePath, { recursive: true });
+    }
+    let _definitionsData = {};
+    let pathsData = {};
+    _.map(paths, (item, urlPath) => {
+        if (whiteList && !whiteList.includes(urlPath)) {
+            return;
         }
-        const res = yield (0, getSwaggerJson_1.default)(swaggerPath);
-        const { paths } = res.data || {};
-        let apiDocType;
-        if ((_a = res.data) === null || _a === void 0 ? void 0 : _a.swagger) {
-            apiDocType = {
-                type: 'swagger',
-                version: (_b = res.data) === null || _b === void 0 ? void 0 : _b.swagger,
-            };
+        const method = Object.keys(item)[0];
+        let bodyParamsType = 'any';
+        let queryParamsType = 'any';
+        let responsesType = 'any';
+        let functionName = functionNameRule(urlPath, _.get(item, `${method}.operationId`));
+        if (swagger) {
+            const parameters = _.get(item, `${method}.parameters`, []);
+            // query params
+            const queryParams = parameters.filter((item) => item.in === 'query');
+            queryParamsType = (0, generateQueryParams_1.default)(queryParams);
+            // body params
+            const bodyParams = parameters.filter((item) => item.in === 'body');
+            bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0]);
+            addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
+            // responses params
+            let response = `${method}.responses.200`;
+            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
         }
-        else if ((_c = res.data) === null || _c === void 0 ? void 0 : _c.openapi) {
-            apiDocType = {
-                type: 'openapi',
-                version: (_d = res.data) === null || _d === void 0 ? void 0 : _d.openapi,
-            };
+        else if (openapi) {
+            let request = `${method}.requestBody.content.application/json`;
+            bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`));
+            addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
+            let response = `${method}.responses.200.content.*/*`;
+            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
         }
-        basePath = typeof basePath !== 'undefined' ? basePath : (_e = res.data) === null || _e === void 0 ? void 0 : _e.basePath;
-        let pathGroups = {};
-        _.map(paths, (item, urlPath) => {
-            if (whiteList && !whiteList.includes(urlPath)) {
-                return;
-            }
-            let fileName = fileNameRule(urlPath);
-            if (Object.keys(pathGroups).includes(fileName)) {
-                pathGroups[fileName].push({
+        pathsData[functionName] = {
+            nameSpace: _.upperFirst(functionName),
+            queryParamsType,
+            bodyParamsType,
+            responsesType,
+        };
+    });
+    function parseDefinition(properties, _defi) {
+        if (!properties) {
+        }
+        else {
+            _.map(properties, (item) => {
+                if (item.$ref) {
+                    _defi[item.$ref] = definitions[(0, refToDefinition_1.default)(item.$ref)];
+                    parseDefinition(definitions[(0, refToDefinition_1.default)(item.$ref)].properties, _defi);
+                }
+                else if (item.type === 'array') {
+                    if (item.items.$ref) {
+                        _defi[item.items.$ref] = definitions[(0, refToDefinition_1.default)(item.items.$ref)];
+                        parseDefinition(definitions[(0, refToDefinition_1.default)(item.items.$ref)].properties, _defi);
+                    }
+                }
+            });
+        }
+        return _defi;
+    }
+    _.map(_definitionsData, (item, key) => {
+        // 递归
+        parseDefinition(item.properties, _definitionsData);
+    });
+    let definitionsData = {};
+    _.map(_definitionsData, (item, key) => {
+        // generate
+        definitionsData[(0, replaceX_1.default)((0, refToDefinition_1.default)(key))] = (0, generateProperties_1.default)(item);
+    });
+    ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/ts/definition.ejs'), {
+        pathsData,
+        definitionsData,
+    }, {}, (err, data) => {
+        if (err) {
+            console.log(chalk_1.default.red(`渲染失败：${err}`));
+        }
+        else {
+            fs_1.default.writeFileSync(path_1.default.join(typeFilePath, typingFileName), data);
+            console.log(chalk_1.default.green(`渲染成功：${typingFileName}`));
+        }
+    });
+}
+function generateTsServices(configItem, res) {
+    var _a;
+    let { outDir, basePath, typingFileName, request, fileNameRule, functionNameRule, whiteList } = configItem;
+    const apiPath = path_1.default.join(process.cwd(), outDir); //存放api文件地址
+    if (!fs_1.default.existsSync(apiPath)) {
+        // mkdir -p
+        fs_1.default.mkdirSync(apiPath, { recursive: true });
+    }
+    const { paths, openapi, swagger } = res.data || {};
+    basePath = typeof basePath !== 'undefined' ? basePath : (_a = res.data) === null || _a === void 0 ? void 0 : _a.basePath;
+    let pathGroups = {};
+    _.map(paths, (item, urlPath) => {
+        if (whiteList && !whiteList.includes(urlPath)) {
+            return;
+        }
+        let fileName = fileNameRule(urlPath);
+        if (Object.keys(pathGroups).includes(fileName)) {
+            pathGroups[fileName].push({
+                url: urlPath,
+                apiInfo: item,
+            });
+        }
+        else {
+            pathGroups[fileName] = [
+                {
                     url: urlPath,
                     apiInfo: item,
-                });
+                },
+            ];
+        }
+    });
+    _.map(pathGroups, (pathGroup, groupKey) => {
+        pathGroup = pathGroup.map((pathItem) => {
+            let { apiInfo, url } = pathItem;
+            const method = Object.keys(apiInfo)[0];
+            let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
+            let functionName = functionNameRule(url, operationId);
+            let queryParamsType = `any`;
+            let bodyParamsType = `any`;
+            let responsesType = `any`;
+            let item = pathItem.apiInfo;
+            if (swagger) {
+                const parameters = _.get(item, `${method}.parameters`, []);
+                // query params
+                const queryParams = parameters.filter((item) => item.in === 'query');
+                queryParamsType = (0, generateQueryParams_1.default)(queryParams);
+                // body params
+                const bodyParams = parameters.filter((item) => item.in === 'body');
+                bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0]);
+                // responses params
+                let response = `${method}.responses.200`;
+                responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            }
+            else if (openapi) {
+                let request = `${method}.requestBody.content.application/json`;
+                bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`));
+                let response = `${method}.responses.200.content.*/*`;
+                responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            }
+            return {
+                url,
+                summary,
+                bodyParamsType: bodyParamsType === 'any' ? queryParamsType : bodyParamsType,
+                responsesType,
+                consumes,
+                method,
+                functionName,
+            };
+        });
+        ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/ts/function_service.ejs'), {
+            request,
+            basePath,
+            typingFileName,
+            pathGroup,
+            functionNameRule: functionNameRule,
+            functionName: '',
+        }, {}, (err, data) => {
+            if (err) {
+                console.log(chalk_1.default.red(`渲染失败：${err}`));
             }
             else {
-                pathGroups[fileName] = [
-                    {
-                        url: urlPath,
-                        apiInfo: item,
-                    },
-                ];
+                fs_1.default.writeFileSync(path_1.default.join(apiPath, groupKey + '.ts'), data);
+                console.log(chalk_1.default.green(`渲染成功：${groupKey + '.ts'}`));
             }
         });
-        _.map(pathGroups, (pathGroup, groupKey) => {
-            pathGroup = pathGroup.map((item) => {
-                let { apiInfo, url } = item;
-                const method = Object.keys(apiInfo)[0];
-                let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
-                let functionName = functionNameRule(url, operationId);
-                let { paramsType, responseType } = parseType(apiInfo, method, functionName, apiDocType);
-                return {
-                    url,
-                    summary,
-                    paramsType,
-                    responseType,
-                    consumes,
-                    method,
-                    functionName,
-                };
-            });
-            ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/ts/function_service.ejs'), {
-                request,
-                basePath,
-                typingFileName,
-                pathGroup,
-                functionNameRule: functionNameRule,
-                functionName: '',
-            }, {}, (err, data) => {
-                if (err) {
-                    console.log(chalk_1.default.red(`渲染失败：${err}`));
-                }
-                else {
-                    fs_1.default.writeFileSync(path_1.default.join(apiPath, groupKey + '.ts'), data);
-                    console.log(chalk_1.default.green(`渲染成功：${groupKey + '.ts'}`));
-                }
-            });
-        });
-        dtsgenerator({
-            contents: [parseSchema(res.data)],
-        })
-            .then((generatedContent) => {
-            fs_1.default.writeFile(path_1.default.join(apiPath, typingFileName), `/* eslint-disable */
-      ${generatedContent}`, { flag: 'w' }, (err) => {
-                if (err) {
-                    return console.log(err);
-                }
-            });
-        })
-            .catch((err) => {
-            console.log(err);
-        });
     });
+}
+function addDefinitionData(ref, _definitionsData, definitions) {
+    if (ref) {
+        _definitionsData[ref] = definitions[(0, refToDefinition_1.default)(ref)];
+    }
 }

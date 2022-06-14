@@ -4,6 +4,7 @@ const refToDefinition = ($ref?: string) => {
   }
 
   $ref = $ref.replace(/#\/definitions\//g, '');
+  $ref = $ref.replace(/#\/components\/schemas\//g, '');
 
   return $ref;
 };

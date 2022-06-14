@@ -14,17 +14,13 @@ export default function generateProperties(item: {
 }) {
   const { properties } = item;
 
-  let typeRes = ['{'];
+  let typeRes = ['{\n'];
   _.map(properties, (item: any, propertyName: string) => {
     const { description, required } = item;
     let paramType = convertToTsType(item);
     const paramRequired = required ? '' : '?';
 
-    typeRes.push(`
-     ${description ? `/* ${description} */` : ''}
-    ${propertyName}${paramRequired}: ${paramType};
-
-    `);
+    typeRes.push(`${propertyName}${paramRequired}: ${paramType}; ${description ? `/* ${description} */\n` : ''}`);
   });
   typeRes.push('}');
 

@@ -2,13 +2,16 @@
 <%- request %>
 <%_ pathGroup.forEach((item) => { _%>
 <%_
-  let { url, summary, paramsType, responseType, consumes, method, functionName } = item;
+  let { url, summary, bodyParamsType, responsesType, consumes, method, functionName } = item;
 %>
-// <%-summary%>
+/**
+* <%-summary%>
+* @return <%-responsesType%>
+*/
 export async function <%=functionName%>(
-  params: <%=paramsType%>,
+  params: <%- bodyParamsType%>,
   extra?: { [key: string]: any },
-): Promise<<%=responseType%>> {
+): Promise<<%=responsesType%>> {
   return request('<%=(basePath === '/' || basePath === '') ? '' : basePath%><%=url%>', {
     method: '<%=method.toUpperCase()%>',
     data: params,

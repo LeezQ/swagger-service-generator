@@ -1,11 +1,11 @@
 
-// function urlToCamelCase(url) {
-//   // remove whitespace
-//   url = url.replace(/\s/g, '');
-//   return url.replace(/[\/|\_|\?\=](\w)/g, function (all, letter) {
-//     return letter.toUpperCase();
-//   });
-// };
+function urlToCamelCase(url) {
+  // remove whitespace
+  url = url.replace(/\s/g, '');
+  return url.replace(/[\/|\_|\?\=](\w)/g, function (all, letter) {
+    return letter.toUpperCase();
+  });
+};
 module.exports = [
   {
     "swaggerPath": "http://121.40.238.63:8092/v2/api-docs",
@@ -13,12 +13,19 @@ module.exports = [
     "fileNameRule": function (url) {
       return url.split('/')[2];
     },
-    "request": "import request from '@/services/request';"
+    "request": "import request from '@/services/request';",
+    // "whiteList": ['/epaas/manager/updateUserTemplateVersion', '/epaas/out/subscribe/tripartiteSubscribeInfo']
   },
-  // {
-  //   swaggerPath: 'https://dev-api.jushuitan.com/fis/v3/api-docs',
-  //   outDir: 'lib/services/fis',
-  // },
+  {
+    "swaggerPath": "https://dev-api.jushuitan.com/fis/v3/api-docs",
+    "typingFileName": 'fis_common_typing.d.ts',
+    "outDir": "lib/src/services",
+    "fileNameRule": function () {
+      return "fis_common";
+    },
+    "request": "import request from '@/services/request';",
+
+  },
   // {
   //   swaggerPath: 'http://api.pone.duomimall.com/v2/api-docs',
   //   outDir: 'lib/dart',
@@ -35,42 +42,23 @@ module.exports = [
   //   swaggerPath: 'http://121.40.238.63:8092/v2/api-docs',
   //   outDir: 'lib/services/eppas',
   // },
-  // {
-  //   "swaggerPath": "./swaggerApi.json",
-  //   "outDir": "lib/services/",
-  //   "fileNameRule": function (url) {
-  //     return 'logistics';
-  //   },
-  //   "request": "import request from '@/services/request';",
-  //   "functionNameRule": function (url) {
-  //     return urlToCamelCase(url);
-  //   },
-  //   basePath: '/',
-  //   typingFileName: 'logistics.d.ts',
-  //   whiteList: [
-  //     '/getData/transportData?apiCode=update_lgst_ignore_remark',
-  //     '/getData/transportData?apiCode=order_logistiscs_alarm_detail',
-  //     '/getData/exportExcel?apiCode=order_logistiscs_alarm_detail',
-  //     '/getData/transportData?apiCode=order_logistiscs_alarm_note',
-  //     '/getData/transportData?apiCode=order_logistiscs_alarm_detail_dim',
-  //     '/getData/transportData?apiCode=order_logistiscs_alarm_summary',
-  //     '/getData/getErpData?apiCode= express_bill_track',
-  //     '/getData/transportData?apiCode=order_logistiscs_alarm_feedback',
-  //     '/getData/getErpData?apiCode= distributor_list',
-  //     '/getData/getErpData?apiCode= platform_shop_list',
-  //     '/getData/transportData?apiCode=delete_logistic_alarm_user_defined_query_pool',
-  //     '/getData/transportData?apiCode=insert_logistic_alarm_user_defined_query_pool',
-  //     '/getData/transportData?apiCode=select_logistic_alarm_user_defined_query_pool',
-  //     '/getData/getErpData?apiCode=order_questions',
-  //     '/getData/transportData?apiCode= logistic_alarm_order_wait_deal_count',
-  //     '/getData/importFileUrl',
-  //     '/getData/getUploadFileUrl',
-  //     '/getData/getBusinessData?code=biz_domain_window_cancel_check',
-  //     '/getData/getBusinessData?code=biz_domain_window_cancel',
-  //     '/getData/transformData?apiCode=logistic_company_query',
-  //     '/getData/transformData?apiCode=biz_domain_msg'
-  //   ]
-  // },
+  {
+    "swaggerPath": "./swaggerApi.json",
+    "outDir": "lib/services/",
+    "fileNameRule": function (url) {
+      return 'logistics';
+    },
+    "request": "import request from '@/services/request';",
+    "functionNameRule": function (url) {
+      return urlToCamelCase(url);
+    },
+    basePath: '/',
+    typingFileName: 'logistics.d.ts',
+    whiteList: [
+      '/getData/transportData?apiCode=update_lgst_ignore_remark',
+
+    ]
+  },
   // {
   //   "swaggerPath": "./swaggerApiWarehouse.json",
   //   "outDir": "lib/services/",

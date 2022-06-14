@@ -1,24 +1,23 @@
+import _ from 'lodash';
 import convertToTsType from './convertToTsType';
 
-export default function generateQueryParams(
-  params: {
-    name: string;
-    in: 'query' | 'body';
-    description: string;
-    required: boolean;
-    type: 'string' | 'boolean';
-  }[],
-) {
-  let typeRes = ['{'];
-  params.forEach((item: any) => {
-    const { name, description, required, type } = item;
-    const paramRequired = required ? '' : '?';
-    const paramDescription = description ? `/* ${description || ''} */` : '';
-    typeRes.push(`
-    ${paramDescription}
-    ${name}${paramRequired}: ${convertToTsType(type)};
-    `);
+type TypeProperty = {
+  name: string;
+  in: string;
+  type: string;
+  required: boolean;
+  description: string;
+};
+
+export default function generateBodyParams(params: TypeProperty[]) {
+  if (params.length === 0) {
+    return 'any';
+  }
+  let x: string = '{ \n';
+  params.forEach((element) => {
+    const { name, required, description } = element;
+    x += `${name}${required ? '' : '?'}: ${convertToTsType(element)};  ${description ? `/* ${description} */` : ''}\n`;
   });
-  typeRes.push('}');
-  return typeRes;
+  x += `\n}`;
+  return x;
 }
