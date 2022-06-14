@@ -11,6 +11,7 @@ import refToDefinition from './utils/refToDefinition';
 import replaceX from './utils/replaceX';
 import { upperFirst } from 'lodash';
 import generateQueryParams from './utils/generateQueryParams';
+import generateServiceType from './utils/generateServiceType';
 
 function goGenerate() {
   const config = require(path.join(process.cwd(), './.swagger.config.js'));
@@ -212,37 +213,38 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
 
       let functionName = functionNameRule(url, operationId);
 
-      let queryParamsType = `any`;
       let bodyParamsType = `any`;
       let responsesType = `any`;
 
       let item = pathItem.apiInfo;
+
       if (swagger) {
         const parameters = _.get(item, `${method}.parameters`, []);
 
-        // query params
         const queryParams = parameters.filter((item: any) => item.in === 'query');
-        queryParamsType = generateQueryParams(queryParams);
-
         // body params
         const bodyParams = parameters.filter((item: any) => item.in === 'body');
-        bodyParamsType = generateBodyParams(bodyParams[0]);
+        if (queryParams.length > 0) {
+          bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName);
+        } else if (bodyParams.length > 0) {
+          bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName);
+        }
 
         // responses params
         let response = `${method}.responses.200`;
-        responsesType = generateBodyParams(_.get(item, `${response}`));
+        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName);
       } else if (openapi) {
         let request = `${method}.requestBody.content.application/json`;
-        bodyParamsType = generateBodyParams(_.get(item, `${request}`));
+        bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName);
 
         let response = `${method}.responses.200.content.*/*`;
-        responsesType = generateBodyParams(_.get(item, `${response}`));
+        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName);
       }
 
       return {
         url,
         summary,
-        bodyParamsType: bodyParamsType === 'any' ? queryParamsType : bodyParamsType,
+        bodyParamsType,
         responsesType,
         consumes,
         method,

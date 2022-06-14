@@ -25,8 +25,6 @@ export default function generateBodyParams(element: {
     let _type = '{';
     function getP(item: TypeSchema) {
       // 递归
-      console.log(item);
-
       const { required = [] } = item;
       _.map(item.properties, (propertyValue, propertyName: string) => {
         const { type, description } = propertyValue;

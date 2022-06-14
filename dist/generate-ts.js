@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const chalk_1 = tslib_1.__importDefault(require("chalk"));
@@ -13,6 +14,7 @@ const generateProperties_1 = tslib_1.__importDefault(require("./utils/generatePr
 const refToDefinition_1 = tslib_1.__importDefault(require("./utils/refToDefinition"));
 const replaceX_1 = tslib_1.__importDefault(require("./utils/replaceX"));
 const generateQueryParams_1 = tslib_1.__importDefault(require("./utils/generateQueryParams"));
+const generateServiceType_1 = tslib_1.__importDefault(require("./utils/generateServiceType"));
 function goGenerate() {
     const config = require(path_1.default.join(process.cwd(), './.swagger.config.js'));
     if (Array.isArray(config)) {
@@ -89,8 +91,7 @@ function generateTsTypes(configItem, res) {
         };
     });
     function parseDefinition(properties, _defi) {
-        if (!properties) {
-        }
+        if (!properties) ;
         else {
             _.map(properties, (item) => {
                 if (item.$ref) {
@@ -166,32 +167,34 @@ function generateTsServices(configItem, res) {
             const method = Object.keys(apiInfo)[0];
             let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
             let functionName = functionNameRule(url, operationId);
-            let queryParamsType = `any`;
             let bodyParamsType = `any`;
             let responsesType = `any`;
             let item = pathItem.apiInfo;
             if (swagger) {
                 const parameters = _.get(item, `${method}.parameters`, []);
-                // query params
                 const queryParams = parameters.filter((item) => item.in === 'query');
-                queryParamsType = (0, generateQueryParams_1.default)(queryParams);
                 // body params
                 const bodyParams = parameters.filter((item) => item.in === 'body');
-                bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0]);
+                if (queryParams.length > 0) {
+                    bodyParamsType = (0, generateServiceType_1.default)(queryParams[0], 'QueryParameters', functionName);
+                }
+                else if (bodyParams.length > 0) {
+                    bodyParamsType = (0, generateServiceType_1.default)(bodyParams[0], 'BodyParameters', functionName);
+                }
                 // responses params
                 let response = `${method}.responses.200`;
-                responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName);
             }
             else if (openapi) {
                 let request = `${method}.requestBody.content.application/json`;
-                bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`));
+                bodyParamsType = (0, generateServiceType_1.default)(_.get(item, `${request}`), 'BodyParameters', functionName);
                 let response = `${method}.responses.200.content.*/*`;
-                responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName);
             }
             return {
                 url,
                 summary,
-                bodyParamsType: bodyParamsType === 'any' ? queryParamsType : bodyParamsType,
+                bodyParamsType,
                 responsesType,
                 consumes,
                 method,
