@@ -1,5 +1,4 @@
-'use strict';
-
+"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const chalk_1 = tslib_1.__importDefault(require("chalk"));
@@ -91,7 +90,8 @@ function generateTsTypes(configItem, res) {
         };
     });
     function parseDefinition(properties, _defi) {
-        if (!properties) ;
+        if (!properties) {
+        }
         else {
             _.map(properties, (item) => {
                 if (item.$ref) {

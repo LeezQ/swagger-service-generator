@@ -1,0 +1,7 @@
+'use strict';
+
+exports.<%-dtoName%> = {
+  <% Object.keys(dtoFields).forEach((fieldKey) => { -%>
+    <%-fieldKey%>: <%- JSON.stringify(dtoFields[fieldKey])-%>,
+  <% }); -%>
+};

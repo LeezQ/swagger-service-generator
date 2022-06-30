@@ -1,0 +1,27 @@
+'use strict';
+
+/**
+ * @param {Egg.Application} app - egg application
+ */
+module.exports = (app) => {
+  const { router, controller, middleware } = app;
+
+  // admin user route
+  router.post('/admin/user/list', middleware.adminAuth(), controller.admin.user.list);
+  router.get('/admin/user/:id', controller.admin.user.show);
+  router.post('/admin/user', controller.admin.user.create);
+  router.put('/admin/user/:id', controller.admin.user.update);
+  router.delete('/admin/user/:id', controller.admin.user.destroy);
+
+  <% Object.keys(pathList).forEach((controllerKey) => { -%>
+    <% const methods = pathList[controllerKey]; %>
+
+    /******** <%= controllerKey -%> route start  ********/
+    <% Object.keys(methods).forEach((methodNameKey) => { -%>
+      <% const method = methods[methodNameKey]; -%>
+      // <%-method.summary%>
+      router.<%-method.method%>('<%-method.path%>', <%-controllerKey%>.<%-methodNameKey%>);
+    <%})-%>
+    /******** <%= controllerKey -%> route end  ********/
+  <%});-%>
+};

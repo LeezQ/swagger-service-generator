@@ -1,0 +1,94 @@
+/* eslint-disable no-empty-function */
+/* eslint-disable jsdoc/check-tag-names */
+"use strict";
+
+const BaseController = require("@core/base_controller");
+const { <%= controllerName%> } = require("@contract/dto/<%= tableName%>");
+
+/**
+ * @Controller <%= controllerName%>
+ */
+class <%= controllerName%>Controller extends BaseController {
+  /**
+   * @Router POST <%= urlBase%>/list
+   * @Request query integer current eg:1
+   * @Request query integer pageSize eg:10
+   * @summary 获取用户列表
+   */
+  async list() {
+    const ctx = this.ctx;
+    const { current = 1, pageSize = 10, filter = {} } = ctx.request.body;
+    const where = {
+      ...filter,
+      deletedAt: null,
+    };
+    const attributes = Object.keys(<%= controllerName%>);
+
+    const result = await ctx.model.<%= controllerName%>.findAndCountAll({
+      attributes,
+      where,
+      limit: pageSize,
+      offset: current - 1,
+    });
+    this.pageRes({
+      ...result,
+      current,
+      pageSize,
+    });
+  }
+
+  /**
+   * @Router GET <%= urlBase%>/{id}
+   * @Request path string *id eg:12
+   * @summary 查询用户信息
+   */
+  async show() {
+    const ctx = this.ctx;
+    const res = await ctx.model.<%= controllerName%>.findByPk(parseInt(ctx.params.id, 10));
+    this.successRes(res);
+  }
+
+  /**
+   * @Router POST <%= urlBase%>
+   * @Request body <%= controllerName%> *body
+   * @summary 创建用户
+   */
+  async create() {
+    const ctx = this.ctx;
+    const res = await ctx.model.<%= controllerName%>.create(ctx.request.body);
+    this.successRes(res);
+  }
+
+  /**
+  * @Router PUT /user/{id}
+  * @Request body User *body
+  * @summary 更新
+  */
+  async update() {
+   const ctx = this.ctx;
+   const res = await ctx.model.User.update(
+    ctx.request.body,
+      {
+        where: { id: parseInt(ctx.params.id, 10) },
+      }
+    );
+    this.successRes(res);
+  }
+
+  /**
+   * @Router DELETE <%= urlBase%>/{id}
+   * @Request path string *id
+   * @summary 删除
+   */
+  async destroy() {
+    const ctx = this.ctx;
+    const res = await ctx.model.<%= controllerName%>.destroy({
+      where: {
+        id: parseInt(ctx.params.id, 10),
+      },
+    });
+    this.successRes(res);
+  }
+}
+
+module.exports = <%= controllerName%>Controller;
