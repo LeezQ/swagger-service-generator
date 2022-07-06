@@ -32,6 +32,16 @@ program
   });
 
 program
+  .command('umi-generate')
+  .option('-t, --type <type>', '类型')
+  .description('生成 umi page')
+  .action((options) => {
+    const { type } = options;
+    console.log(type);
+    require('../dist/generate-umi-page');
+  });
+
+program
   .command('model-generate')
   .option('-t, --type <type>', '类型')
   .description('生成 file')

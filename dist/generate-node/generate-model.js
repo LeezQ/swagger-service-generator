@@ -99,7 +99,7 @@ function generateController(tables, queryInterface, sequelize, controllerDir) {
 }
 function getSequelizeType(field) {
     let { type = '', field: fileName = '' } = field;
-    if (fileName === 'id' && field.primaryKey) {
+    if (fileName === 'id' && field.primaryKey && !field.autoIncrement) {
         type = 'DataTypes.UUID';
         return type;
     }
@@ -135,7 +135,7 @@ function getDefaultValue(field) {
         defaultValue = `sequelize.literal('CURRENT_TIMESTAMP')`;
         return defaultValue;
     }
-    if (field.field === 'id' && field.primaryKey) {
+    if (field.field === 'id' && field.primaryKey && !field.autoIncrement) {
         defaultValue = 'DataTypes.UUIDV4';
         return defaultValue;
     }

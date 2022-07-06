@@ -1,0 +1,172 @@
+import { getLog, getLogDetail } from "@/services/log";
+import { useAsyncEffect } from "@/utils/hooks/useAsyncEffect";
+import { DEFAULT_PAGE_SIZE } from "@/utils/pageConfig";
+import { useSetState } from "ahooks";
+import JstTable from "crm-components/jstTable";
+import { history, useLocation } from "umi";
+
+import "./index.less";
+
+export default (props: any) => {
+  const location: any = useLocation();
+  // @ts-ignore
+  const query = location.query;
+
+  const columns = (getDetail: any) => [
+    {
+      title: "ID",
+      dataIndex: "autoid",
+      width: 120,
+    },
+    {
+      title: "操作人",
+      dataIndex: "username",
+      width: 100,
+    },
+    {
+      title: "操作名称",
+      dataIndex: "name",
+      width: 300,
+    },
+    {
+      title: "备注信息",
+      dataIndex: "text",
+      ellipsis: true,
+      render: (text: any, record: any, index: any) =>
+       null,
+      // width: 300,
+    },
+    {
+      title: "操作时间",
+      dataIndex: "createFormatAll",
+      width: 200,
+    },
+  ];
+
+  const [state, setState] = useSetState({
+    loading: false, // table loading
+    dataList: [], // table 数据list
+    pagination: {
+      total: 0,
+      current: query.currentPage || 1,
+      pageSize: query.pageSize || DEFAULT_PAGE_SIZE,
+    }, // table 分页相关
+  });
+
+  useAsyncEffect(async () => {
+    const { pagination } = state;
+    await fetchList(pagination.current, pagination.pageSize);
+  }, []);
+
+  const fetchList = async (currentPage: any, pageSize: any) => {
+    const { pagination } = state;
+
+    history.replace({
+      pathname: location.pathname,
+      query: {
+        ...query,
+        currentPage: currentPage || pagination.current,
+        pageSize: pageSize || pagination.pageSize,
+      },
+    });
+
+    setState({
+      loading: true,
+    });
+
+    const { code, data, page } = await getLog(
+      {
+        data: {
+          id: query.id,
+          type: query.type,
+        },
+        page: {
+          pageSize: pageSize || pagination.pageSize,
+          currentPage: currentPage || pagination.current,
+        },
+      },
+      // {
+      //   loading: true,
+      // },
+    );
+
+    if (code === 0) {
+      setState({
+        loading: false,
+        dataList: data || [],
+        pagination: {
+          total: page.count,
+          current: page.currentPage || 1,
+          pageSize: page.pageSize || DEFAULT_PAGE_SIZE,
+        },
+      });
+    } else {
+      setState({
+        loading: false,
+      });
+    }
+  };
+
+  // 获取操作日志详情
+  const getDetail = async (autoId: any) => {
+    const { dataList } = state;
+
+    const { code, data } = await getLogDetail({
+      data: {
+        autoid: autoId,
+      },
+    });
+
+    const newList: any = dataList.map((item: any) => {
+      if (item.autoid === autoId) {
+        return data;
+      }
+
+      return item;
+    });
+
+    setState({
+      dataList: newList,
+    });
+  };
+
+  const handleTableChange = (pagination: any, filters: any, sorter: any) => {
+    fetchList(pagination.current, pagination.pageSize);
+  };
+
+  const paginationChange = (page: number, pageSize: number) => {
+    fetchList(page, pageSize);
+  };
+
+  const _columns = columns(getDetail);
+
+  return (
+    <div className="p-4 h-auto log">
+      <JstTable
+        rowKey={(record) => record.autoid}
+        size="middle"
+        // @ts-ignore
+        columns={_columns}
+        // scroll={{ x: 1200 }}
+        loading={state.loading}
+        onChange={handleTableChange}
+        dataSource={state.dataList}
+        pagination={{
+          ...state.pagination,
+          simple: true,
+          // onChange: paginationChange,
+          showTotal: (total) => `共 ${total} 条`,
+        }}
+      />
+
+      {/* <JstPagination
+        {...{
+          ...state.pagination,
+          // disabled: true,
+          onChange: paginationChange,
+          showTotal: (total) => `共 ${total} 条`,
+        }}
+      /> */}
+    </div>
+  );
+};
