@@ -1,0 +1,64 @@
+import {
+  Inject,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Del,
+  Param,
+  Body,
+} from '@midwayjs/decorator';
+import { InjectEntityModel } from '@midwayjs/orm';
+import { <%=controllerName%> } from '@/entity/<%=controllerName%>';
+import { Repository } from 'typeorm';
+
+import { Context } from '@midwayjs/koa';
+import { BaseController } from '@/controller/base.controller';
+
+@Controller('<%=routeKey%>')
+export class <%=controllerName%>Controller extends BaseController {
+  @Inject()
+  ctx: Context;
+
+  @InjectEntityModel(<%=controllerName%>)
+  <%=controllerName%>Model: Repository<<%=controllerName%>>;
+
+  @Get('/')
+  async get() {
+    const res = await this.<%=controllerName%>Model.findAndCount({});
+    this.pageRes(res);
+  }
+
+  @Get('/:id')
+  async detail(@Param('id') id: number) {
+    const res = await this.<%=controllerName%>Model.findOne({
+      where: { id },
+    });
+    this.success(res);
+  }
+
+  @Post('/')
+  async add(@Body() dto: <%=controllerName%>) {
+    let <%=fileName%> = new <%=controllerName%>();
+    <%=fileName%> = dto;
+
+    const res = await this.<%=controllerName%>Model.save(<%=fileName%>);
+    this.success(res);
+  }
+
+  @Put('/:id')
+  async update(@Param('id') id: string, @Body() dto: <%=controllerName%>) {
+    let <%=fileName%> = new <%=controllerName%>();
+    <%=fileName%> = dto;
+    const res = this.<%=controllerName%>Model.update(id, <%=fileName%>);
+    this.success(res);
+  }
+
+  @Del('/:id')
+  async delete(@Param('id') id: string) {
+    const res = await this.<%=controllerName%>Model.update(id, {
+      deletedAt: new Date(),
+    });
+    this.success(res);
+  }
+}

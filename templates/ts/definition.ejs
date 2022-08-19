@@ -1,10 +1,10 @@
-declare namespace Definitions {
+declare namespace <%= configItem.definitionsName %> {
   <%_ Object.keys(definitionsData).map((key) => { %>
      export type <%=key%> = <%=definitionsData[key] %>
   <%_})%>
 }
 
-declare namespace Paths {
+declare namespace <%= configItem.pathsName %> {
   <%_ Object.keys(pathsData).map((key) => { %>
     namespace <%=pathsData[key].nameSpace%> {
       export type QueryParameters = <%- pathsData[key].queryParamsType %>;

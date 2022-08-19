@@ -1,12 +1,15 @@
 // conver to ts type
 
+import path from 'path';
 import refToDefinition from './refToDefinition';
 import replaceX from './replaceX';
 
-const convertToTsType: any = (item: any) => {
+const convertToTsType: any = (item: any, config: any) => {
+  const { definitionsName = 'Definitions' } = config;
+
   const { type, items, $ref } = item;
   if ($ref) {
-    return 'Definitions.' + replaceX(refToDefinition($ref));
+    return `${definitionsName}.${replaceX(refToDefinition($ref))}`;
   }
   switch (type) {
     case 'string':
@@ -19,7 +22,7 @@ const convertToTsType: any = (item: any) => {
       return 'number';
     case 'array':
       if (items) {
-        let itemsType = convertToTsType(items);
+        let itemsType = convertToTsType(items, config);
         return `${itemsType}[]`;
       } else {
         return 'any[]';

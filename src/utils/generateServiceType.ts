@@ -14,20 +14,21 @@ type TypeSchema = {
   };
 };
 
-export default function generateServiceType(item: any, genType: string, functionName: string): string {
+export default function generateServiceType(item: any, genType: string, functionName: string, config: any): string {
   const $ref = _.get(item, `schema.$ref`);
   if ($ref) {
-    return getTypeFromRef($ref);
+    return getTypeFromRef($ref, config);
   } else {
     return `Paths.${_.upperFirst(functionName)}.${genType}`;
   }
 }
 
-function getTypeFromRef(ref?: string): string {
+function getTypeFromRef(ref?: string, config?: any): string {
+  const { definitionsName = 'Definitions' } = config;
   if (!ref) {
     return '';
   }
 
   const bodyParamsSchemaRefType = replaceX(refToDefinition(ref));
-  return 'Definitions.' + bodyParamsSchemaRefType;
+  return `${definitionsName}.${bodyParamsSchemaRefType}`;
 }

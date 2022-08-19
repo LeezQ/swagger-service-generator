@@ -5,7 +5,7 @@ const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const convertToTsType_1 = tslib_1.__importDefault(require("./convertToTsType"));
 const refToDefinition_1 = tslib_1.__importDefault(require("./refToDefinition"));
 const replaceX_1 = tslib_1.__importDefault(require("./replaceX"));
-function generateBodyParams(element) {
+function generateBodyParams(element, config) {
     if (lodash_1.default.get(element, 'schema.properties')) {
         let _type = '{';
         function getP(item) {
@@ -23,7 +23,7 @@ function generateBodyParams(element) {
                 }
                 else {
                     _type += `
-            ${propertyName}${required.includes(propertyName) ? '' : '?'}: ${(0, convertToTsType_1.default)(propertyValue)}; ${description ? `/* ${description} */` : ''}`;
+            ${propertyName}${required.includes(propertyName) ? '' : '?'}: ${(0, convertToTsType_1.default)(propertyValue, config)}; ${description ? `/* ${description} */` : ''}`;
                 }
             });
         }
@@ -32,15 +32,16 @@ function generateBodyParams(element) {
         return _type;
     }
     else if (lodash_1.default.get(element, 'schema.$ref')) {
-        return getTypeFromRef(element.schema.$ref);
+        return getTypeFromRef(element.schema.$ref, config);
     }
     return 'any';
 }
 exports.default = generateBodyParams;
-function getTypeFromRef(ref) {
+function getTypeFromRef(ref, config) {
+    const { definitionsName = 'Definitions' } = config;
     if (!ref) {
         return '';
     }
     const bodyParamsSchemaRefType = (0, replaceX_1.default)((0, refToDefinition_1.default)(ref));
-    return 'Definitions.' + bodyParamsSchemaRefType;
+    return `${definitionsName}.${bodyParamsSchemaRefType}`;
 }

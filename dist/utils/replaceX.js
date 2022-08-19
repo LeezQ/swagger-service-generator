@@ -5,6 +5,7 @@ const replaceX = ($ref) => {
         return 'any';
     }
     $ref = $ref.replace(/\»/g, '');
+    $ref = $ref.replace(/\[|\]/g, '');
     $ref = $ref.replace(/[\/|\«|\,|\»](.)/g, function (all, letter) {
         return letter.toUpperCase();
     });

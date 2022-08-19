@@ -9,14 +9,16 @@ type TypeProperty = {
   description: string;
 };
 
-export default function generateBodyParams(params: TypeProperty[]) {
+export default function generateBodyParams(params: TypeProperty[], config: any) {
   if (params.length === 0) {
     return 'any';
   }
   let x: string = '{ \n';
   params.forEach((element) => {
     const { name, required, description } = element;
-    x += `${name}${required ? '' : '?'}: ${convertToTsType(element)};  ${description ? `/* ${description} */` : ''}\n`;
+    x += `${name}${required ? '' : '?'}: ${convertToTsType(element, config)};  ${
+      description ? `/* ${description} */` : ''
+    }\n`;
   });
   x += `\n}`;
   return x;

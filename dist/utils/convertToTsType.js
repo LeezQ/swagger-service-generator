@@ -4,10 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const refToDefinition_1 = tslib_1.__importDefault(require("./refToDefinition"));
 const replaceX_1 = tslib_1.__importDefault(require("./replaceX"));
-const convertToTsType = (item) => {
+const convertToTsType = (item, config) => {
+    const { definitionsName = 'Definitions' } = config;
     const { type, items, $ref } = item;
     if ($ref) {
-        return 'Definitions.' + (0, replaceX_1.default)((0, refToDefinition_1.default)($ref));
+        return `${definitionsName}.${(0, replaceX_1.default)((0, refToDefinition_1.default)($ref))}`;
     }
     switch (type) {
         case 'string':
@@ -20,7 +21,7 @@ const convertToTsType = (item) => {
             return 'number';
         case 'array':
             if (items) {
-                let itemsType = convertToTsType(items);
+                let itemsType = convertToTsType(items, config);
                 return `${itemsType}[]`;
             }
             else {
