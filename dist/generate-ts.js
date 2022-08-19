@@ -1,4 +1,5 @@
-"use strict";
+'use strict';
+
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const chalk_1 = tslib_1.__importDefault(require("chalk"));
@@ -26,10 +27,10 @@ goGenerate();
 function run(configItem) {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         const res = yield (0, getSwaggerJson_1.default)(configItem.swaggerPath);
-        configItem = Object.assign({ outDir: 'src/services', basePath: '/', typingFileName: 'api.d.ts', request: `import request from 'umi-request';`, fileNameRule: (url) => {
+        configItem = Object.assign({ outDir: 'src/services', basePath: '/', typingFileName: 'api.d.ts', definitionsName: 'Definitions', pathsName: 'Paths', request: `import request from 'umi-request';`, fileNameRule: (url) => {
                 return (url.split('/') || [])[1] || 'index';
             }, functionNameRule: (url, operationId) => {
-                if (operationId !== '') {
+                if (operationId && operationId !== '') {
                     return (0, urlToCamelCase_1.default)(operationId);
                 }
                 return (0, urlToCamelCase_1.default)(url.replace(/^\//, ''));
@@ -52,7 +53,10 @@ function generateTsTypes(configItem, res) {
     let _definitionsData = {};
     let pathsData = {};
     _.map(paths, (item, urlPath) => {
-        if (whiteList && !whiteList.includes(urlPath)) {
+        if (_.isFunction(whiteList) && !whiteList(urlPath)) {
+            return;
+        }
+        if (_.isArray(whiteList) && !whiteList.includes(urlPath)) {
             return;
         }
         const method = Object.keys(item)[0];
@@ -64,22 +68,22 @@ function generateTsTypes(configItem, res) {
             const parameters = _.get(item, `${method}.parameters`, []);
             // query params
             const queryParams = parameters.filter((item) => item.in === 'query');
-            queryParamsType = (0, generateQueryParams_1.default)(queryParams);
+            queryParamsType = (0, generateQueryParams_1.default)(queryParams, configItem);
             // body params
             const bodyParams = parameters.filter((item) => item.in === 'body');
-            bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0]);
+            bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0], configItem);
             addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
             // responses params
             let response = `${method}.responses.200`;
-            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`), configItem);
             addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
         }
         else if (openapi) {
             let request = `${method}.requestBody.content.application/json`;
-            bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`));
+            bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`), configItem);
             addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
             let response = `${method}.responses.200.content.*/*`;
-            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`));
+            responsesType = (0, generateBodyParams_1.default)(_.get(item, `${response}`), configItem);
             addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
         }
         pathsData[functionName] = {
@@ -90,15 +94,14 @@ function generateTsTypes(configItem, res) {
         };
     });
     function parseDefinition(properties, _defi) {
-        if (!properties) {
-        }
+        if (!properties) ;
         else {
             _.map(properties, (item) => {
                 if (item.$ref) {
                     _defi[item.$ref] = definitions[(0, refToDefinition_1.default)(item.$ref)];
                     parseDefinition(definitions[(0, refToDefinition_1.default)(item.$ref)].properties, _defi);
                 }
-                else if (item.type === 'array') {
+                else if (item.type === 'array' && _defi[item.items.$ref]) {
                     if (item.items.$ref) {
                         _defi[item.items.$ref] = definitions[(0, refToDefinition_1.default)(item.items.$ref)];
                         parseDefinition(definitions[(0, refToDefinition_1.default)(item.items.$ref)].properties, _defi);
@@ -115,9 +118,10 @@ function generateTsTypes(configItem, res) {
     let definitionsData = {};
     _.map(_definitionsData, (item, key) => {
         // generate
-        definitionsData[(0, replaceX_1.default)((0, refToDefinition_1.default)(key))] = (0, generateProperties_1.default)(item);
+        definitionsData[(0, replaceX_1.default)((0, refToDefinition_1.default)(key))] = (0, generateProperties_1.default)(item, configItem);
     });
     ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/ts/definition.ejs'), {
+        configItem,
         pathsData,
         definitionsData,
     }, {}, (err, data) => {
@@ -142,7 +146,10 @@ function generateTsServices(configItem, res) {
     basePath = typeof basePath !== 'undefined' ? basePath : (_a = res.data) === null || _a === void 0 ? void 0 : _a.basePath;
     let pathGroups = {};
     _.map(paths, (item, urlPath) => {
-        if (whiteList && !whiteList.includes(urlPath)) {
+        if (_.isFunction(whiteList) && !whiteList(urlPath)) {
+            return;
+        }
+        if (_.isArray(whiteList) && !whiteList.includes(urlPath)) {
             return;
         }
         let fileName = fileNameRule(urlPath);
@@ -176,20 +183,20 @@ function generateTsServices(configItem, res) {
                 // body params
                 const bodyParams = parameters.filter((item) => item.in === 'body');
                 if (queryParams.length > 0) {
-                    bodyParamsType = (0, generateServiceType_1.default)(queryParams[0], 'QueryParameters', functionName);
+                    bodyParamsType = (0, generateServiceType_1.default)(queryParams[0], 'QueryParameters', functionName, configItem);
                 }
                 else if (bodyParams.length > 0) {
-                    bodyParamsType = (0, generateServiceType_1.default)(bodyParams[0], 'BodyParameters', functionName);
+                    bodyParamsType = (0, generateServiceType_1.default)(bodyParams[0], 'BodyParameters', functionName, configItem);
                 }
                 // responses params
                 let response = `${method}.responses.200`;
-                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName);
+                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName, configItem);
             }
             else if (openapi) {
                 let request = `${method}.requestBody.content.application/json`;
-                bodyParamsType = (0, generateServiceType_1.default)(_.get(item, `${request}`), 'BodyParameters', functionName);
+                bodyParamsType = (0, generateServiceType_1.default)(_.get(item, `${request}`), 'BodyParameters', functionName, configItem);
                 let response = `${method}.responses.200.content.*/*`;
-                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName);
+                responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName, configItem);
             }
             return {
                 url,

@@ -46,8 +46,9 @@ program
   .option('-t, --type <type>', '类型')
   .description('生成 file')
   .action((options) => {
-    require('../dist/generate-node/generate-model');
-    require('../dist/generate-egg-template');
+    // require('../dist/generate-node/generate-model');
+    // require('../dist/generate-egg-template');
+    require('../dist/generate-midway-template');
   });
 
 program.parse(process.argv);

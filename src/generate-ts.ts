@@ -32,12 +32,14 @@ async function run(configItem: any) {
     outDir: 'src/services',
     basePath: '/',
     typingFileName: 'api.d.ts',
+    definitionsName: 'Definitions',
+    pathsName: 'Paths',
     request: `import request from 'umi-request';`,
     fileNameRule: (url: string) => {
       return (url.split('/') || [])[1] || 'index';
     },
     functionNameRule: (url: string, operationId: string) => {
-      if (operationId !== '') {
+      if (operationId && operationId !== '') {
         return urlToCamelCase(operationId);
       }
       return urlToCamelCase(url.replace(/^\//, ''));
@@ -72,7 +74,11 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
   } = {};
 
   _.map(paths, (item: any, urlPath: string) => {
-    if (whiteList && !whiteList.includes(urlPath)) {
+    if (_.isFunction(whiteList) && !whiteList(urlPath)) {
+      return;
+    }
+
+    if (_.isArray(whiteList) && !whiteList.includes(urlPath)) {
       return;
     }
 
@@ -89,24 +95,24 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
 
       // query params
       const queryParams = parameters.filter((item: any) => item.in === 'query');
-      queryParamsType = generateQueryParams(queryParams);
+      queryParamsType = generateQueryParams(queryParams, configItem);
 
       // body params
       const bodyParams = parameters.filter((item: any) => item.in === 'body');
-      bodyParamsType = generateBodyParams(bodyParams[0]);
+      bodyParamsType = generateBodyParams(bodyParams[0], configItem);
       addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
 
       // responses params
       let response = `${method}.responses.200`;
-      responsesType = generateBodyParams(_.get(item, `${response}`));
+      responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
       addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
     } else if (openapi) {
       let request = `${method}.requestBody.content.application/json`;
-      bodyParamsType = generateBodyParams(_.get(item, `${request}`));
+      bodyParamsType = generateBodyParams(_.get(item, `${request}`), configItem);
       addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
 
       let response = `${method}.responses.200.content.*/*`;
-      responsesType = generateBodyParams(_.get(item, `${response}`));
+      responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
       addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
     }
 
@@ -126,7 +132,7 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
           _defi[item.$ref] = definitions[refToDefinition(item.$ref)];
 
           parseDefinition(definitions[refToDefinition(item.$ref)].properties, _defi);
-        } else if (item.type === 'array') {
+        } else if (item.type === 'array' && _defi[item.items.$ref]) {
           if (item.items.$ref) {
             _defi[item.items.$ref] = definitions[refToDefinition(item.items.$ref)];
             parseDefinition(definitions[refToDefinition(item.items.$ref)].properties, _defi);
@@ -145,12 +151,13 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
   let definitionsData: any = {};
   _.map(_definitionsData, (item: any, key: string) => {
     // generate
-    definitionsData[replaceX(refToDefinition(key))] = generateProperties(item);
+    definitionsData[replaceX(refToDefinition(key))] = generateProperties(item, configItem);
   });
 
   ejs.renderFile(
     path.join(__dirname, '../templates/ts/definition.ejs'),
     {
+      configItem,
       pathsData,
       definitionsData,
     },
@@ -184,7 +191,11 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
     }[];
   } = {};
   _.map(paths, (item: any, urlPath: string) => {
-    if (whiteList && !whiteList.includes(urlPath)) {
+    if (_.isFunction(whiteList) && !whiteList(urlPath)) {
+      return;
+    }
+
+    if (_.isArray(whiteList) && !whiteList.includes(urlPath)) {
       return;
     }
 
@@ -225,20 +236,20 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
         // body params
         const bodyParams = parameters.filter((item: any) => item.in === 'body');
         if (queryParams.length > 0) {
-          bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName);
+          bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName, configItem);
         } else if (bodyParams.length > 0) {
-          bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName);
+          bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName, configItem);
         }
 
         // responses params
         let response = `${method}.responses.200`;
-        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName);
+        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
       } else if (openapi) {
         let request = `${method}.requestBody.content.application/json`;
-        bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName);
+        bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName, configItem);
 
         let response = `${method}.responses.200.content.*/*`;
-        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName);
+        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
       }
 
       return {
