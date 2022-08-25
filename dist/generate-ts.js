@@ -101,7 +101,7 @@ function generateTsTypes(configItem, res) {
                     _defi[item.$ref] = definitions[(0, refToDefinition_1.default)(item.$ref)];
                     parseDefinition(definitions[(0, refToDefinition_1.default)(item.$ref)].properties, _defi);
                 }
-                else if (item.type === 'array' && _defi[item.items.$ref]) {
+                else if (item.type === 'array' && !_defi[item.items.$ref]) {
                     if (item.items.$ref) {
                         _defi[item.items.$ref] = definitions[(0, refToDefinition_1.default)(item.items.$ref)];
                         parseDefinition(definitions[(0, refToDefinition_1.default)(item.items.$ref)].properties, _defi);

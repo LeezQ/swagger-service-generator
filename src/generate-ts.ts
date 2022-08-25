@@ -9,7 +9,6 @@ import generateBodyParams from './utils/generateBodyParams';
 import generateProperties from './utils/generateProperties';
 import refToDefinition from './utils/refToDefinition';
 import replaceX from './utils/replaceX';
-import { upperFirst } from 'lodash';
 import generateQueryParams from './utils/generateQueryParams';
 import generateServiceType from './utils/generateServiceType';
 
@@ -132,7 +131,7 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
           _defi[item.$ref] = definitions[refToDefinition(item.$ref)];
 
           parseDefinition(definitions[refToDefinition(item.$ref)].properties, _defi);
-        } else if (item.type === 'array' && _defi[item.items.$ref]) {
+        } else if (item.type === 'array' && !_defi[item.items.$ref]) {
           if (item.items.$ref) {
             _defi[item.items.$ref] = definitions[refToDefinition(item.items.$ref)];
             parseDefinition(definitions[refToDefinition(item.items.$ref)].properties, _defi);

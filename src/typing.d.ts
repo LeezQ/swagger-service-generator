@@ -8,7 +8,6 @@ export type ApiInfo = {
         type?: string;
         name?: string;
         $ref?: string;
-
         schema?: {
           type: string;
           $ref: string;

@@ -10,9 +10,6 @@
     "g-ts": "ts-node src/generate-ts.ts",
     "dart": "ts-node src/generate-dart.ts",
     "ts-node": "ts-node ",
-    "node": "ts-node src/generate-node/generate-model.ts",
-    "egg-controller": "ts-node src/generate-egg-template.ts",
-    "midway-controller": "ts-node src/generate-midway-template.ts",
     "build": "rollup --config rollup.config.js",
     "tsc": "tsc -p tsconfig.json --outDir dist"
   },
@@ -35,11 +32,8 @@
     "@types/inquirer": "^8.2.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.36",
-    "@types/sequelize": "^4.28.13",
-    "mysql2": "^2.3.3",
     "prettier": "^2.6.2",
-    "rollup": "^2.72.0",
-    "sequelize": "^6.21.2"
+    "rollup": "^2.72.0"
   },
   "files": [
     "dist",

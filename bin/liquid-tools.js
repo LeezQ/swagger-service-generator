@@ -19,36 +19,4 @@ program
     }
   });
 
-program
-  .command('file-generate')
-  .option('-t, --type <type>', '类型')
-  .description('生成 file')
-  .action((options) => {
-    const { type } = options;
-    console.log(type);
-    if (type === 'getx') {
-      require('../dist/generate-getx-template');
-    }
-  });
-
-program
-  .command('umi-generate')
-  .option('-t, --type <type>', '类型')
-  .description('生成 umi page')
-  .action((options) => {
-    const { type } = options;
-    console.log(type);
-    require('../dist/generate-umi-page');
-  });
-
-program
-  .command('model-generate')
-  .option('-t, --type <type>', '类型')
-  .description('生成 file')
-  .action((options) => {
-    // require('../dist/generate-node/generate-model');
-    // require('../dist/generate-egg-template');
-    require('../dist/generate-midway-template');
-  });
-
 program.parse(process.argv);
