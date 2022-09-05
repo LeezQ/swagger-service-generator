@@ -69,8 +69,10 @@ function run(configItem) {
         child_process_1.default.execSync(`dart format ${path_1.default.join(process.cwd(), 'lib')}`);
         console.log(chalk_1.default.green('done!'));
         console.log(chalk_1.default.green('pub run build_runner...'));
-        child_process_1.default.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
-        console.log(chalk_1.default.green('生成完成'));
+        setTimeout(() => {
+            child_process_1.default.execSync(`flutter pub run build_runner build --delete-conflicting-outputs `);
+            console.log(chalk_1.default.green('生成完成'));
+        }, 1000);
     });
 }
 function replaceX(str) {
@@ -173,8 +175,11 @@ function generateResponseTypeName(responses) {
 }
 function genetateService(pathGroups, fileNameRule, functionNameRule, request, basePath, outDir) {
     const apiPath = path_1.default.join(process.cwd(), outDir + '/services/'); //存放api文件地址
+    // remove apiPath
+    if (fs_1.default.existsSync(apiPath)) {
+        fs_1.default.rmSync(apiPath, { recursive: true });
+    }
     if (!fs_1.default.existsSync(apiPath)) {
-        // mkdir -p
         fs_1.default.mkdirSync(apiPath, { recursive: true });
     }
     _.map(pathGroups, (pathGroup, groupKey) => {
@@ -212,6 +217,9 @@ function genetateService(pathGroups, fileNameRule, functionNameRule, request, ba
 }
 function generateParamModel(pathGroups, outDir) {
     const modelDirPath = path_1.default.join(process.cwd(), outDir + '/models'); //存放api文件地址
+    if (fs_1.default.existsSync(modelDirPath)) {
+        fs_1.default.rmSync(modelDirPath, { recursive: true });
+    }
     if (!fs_1.default.existsSync(modelDirPath)) {
         fs_1.default.mkdirSync(modelDirPath, { recursive: true });
     }
@@ -220,6 +228,7 @@ function generateParamModel(pathGroups, outDir) {
         pathGroup.forEach((item) => {
             const { apiInfo } = item;
             let { operationId, parameters = [] } = apiInfo[Object.keys(apiInfo)[0]];
+            operationId = operationId.replace(/[\s|_]/g, '');
             operationId = replaceX(operationId);
             const upperOperationId = (0, lodash_1.upperFirst)(operationId);
             const paramName = `Params${(0, lodash_1.upperFirst)(operationId)}`;
@@ -254,12 +263,17 @@ function generateParamModel(pathGroups, outDir) {
 }
 function generateEntity(definitions, outDir) {
     const entityDir = path_1.default.join(process.cwd(), outDir + '/entity'); //存放api文件地址
+    if (fs_1.default.existsSync(entityDir)) {
+        fs_1.default.rmSync(entityDir, { recursive: true });
+    }
     if (!fs_1.default.existsSync(entityDir)) {
         // mkdir -p
         fs_1.default.mkdirSync(entityDir, { recursive: true });
     }
+    let allModels = [];
     Object.keys(definitions).forEach((modelName) => {
         const { required = [], properties = {} } = definitions[modelName];
+        allModels.push(replaceX(modelName));
         // 生成 entities
         ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/entities.ejs'), {
             modelName: replaceX(modelName),
@@ -272,5 +286,14 @@ function generateEntity(definitions, outDir) {
             }
             fs_1.default.writeFileSync(path_1.default.join(entityDir, `${replaceX(modelName)}.dart`), str);
         });
+    });
+    // 生成 entities
+    ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/dart/entitie_index.ejs'), {
+        allModels: allModels,
+    }, {}, function (err, str) {
+        if (err) {
+            console.log(chalk_1.default.red(err.toString()));
+        }
+        fs_1.default.writeFileSync(path_1.default.join(entityDir, `entity.dart`), str);
     });
 }

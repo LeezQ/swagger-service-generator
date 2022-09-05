@@ -1,0 +1,4 @@
+library entity;
+<% allModels.forEach((_key) => { -%>
+export './<%- _key%>.dart';
+<% }) %>
