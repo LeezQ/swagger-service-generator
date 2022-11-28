@@ -81,46 +81,46 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
       return;
     }
 
-    const method = Object.keys(item)[0];
+    Object.keys(item).forEach((method) => {
+      let bodyParamsType = 'any';
+      let queryParamsType = 'any';
+      let responsesType = 'any';
 
-    let bodyParamsType = 'any';
-    let queryParamsType = 'any';
-    let responsesType = 'any';
+      let functionName = functionNameRule(urlPath, _.get(item, `${method}.operationId`));
 
-    let functionName = functionNameRule(urlPath, _.get(item, `${method}.operationId`));
+      if (swagger) {
+        const parameters = _.get(item, `${method}.parameters`, []);
 
-    if (swagger) {
-      const parameters = _.get(item, `${method}.parameters`, []);
+        // query params
+        const queryParams = parameters.filter((item: any) => item.in === 'query');
+        queryParamsType = generateQueryParams(queryParams, configItem);
 
-      // query params
-      const queryParams = parameters.filter((item: any) => item.in === 'query');
-      queryParamsType = generateQueryParams(queryParams, configItem);
+        // body params
+        const bodyParams = parameters.filter((item: any) => item.in === 'body');
+        bodyParamsType = generateBodyParams(bodyParams[0], configItem);
+        addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
 
-      // body params
-      const bodyParams = parameters.filter((item: any) => item.in === 'body');
-      bodyParamsType = generateBodyParams(bodyParams[0], configItem);
-      addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
+        // responses params
+        let response = `${method}.responses.200`;
+        responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
+        addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
+      } else if (openapi) {
+        let request = `${method}.requestBody.content.application/json`;
+        bodyParamsType = generateBodyParams(_.get(item, `${request}`), configItem);
+        addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
 
-      // responses params
-      let response = `${method}.responses.200`;
-      responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
-      addDefinitionData(_.get(item, `${method}.responses.200.schema.$ref`), _definitionsData, definitions);
-    } else if (openapi) {
-      let request = `${method}.requestBody.content.application/json`;
-      bodyParamsType = generateBodyParams(_.get(item, `${request}`), configItem);
-      addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
+        let response = `${method}.responses.200.content.*/*`;
+        responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
+        addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
+      }
 
-      let response = `${method}.responses.200.content.*/*`;
-      responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
-      addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
-    }
-
-    pathsData[functionName] = {
-      nameSpace: _.upperFirst(functionName),
-      queryParamsType,
-      bodyParamsType,
-      responsesType,
-    };
+      pathsData[functionName] = {
+        nameSpace: _.upperFirst(functionName),
+        queryParamsType,
+        bodyParamsType,
+        responsesType,
+      };
+    });
   });
 
   function parseDefinition(properties: any, _defi: any) {
@@ -216,51 +216,56 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
   });
 
   _.map(pathGroups, (pathGroup: any[], groupKey: any) => {
-    pathGroup = pathGroup.map((pathItem: any) => {
+    let _pathGroup: any = [];
+    for (const pathItem of pathGroup) {
       let { apiInfo, url } = pathItem;
-      const method = Object.keys(apiInfo)[0];
-      let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
+      // const method = Object.keys(apiInfo)[0];
+      const methods = Object.keys(apiInfo);
+      methods.forEach((method) => {
+        // console.log(111, method);
+        let { summary = '', operationId = '', consumes = '' } = apiInfo[method];
 
-      let functionName = functionNameRule(url, operationId);
+        let functionName = functionNameRule(url, operationId);
 
-      let bodyParamsType = `any`;
-      let responsesType = `any`;
+        let bodyParamsType = `any`;
+        let responsesType = `any`;
 
-      let item = pathItem.apiInfo;
+        let item = pathItem.apiInfo;
 
-      if (swagger) {
-        const parameters = _.get(item, `${method}.parameters`, []);
+        if (swagger) {
+          const parameters = _.get(item, `${method}.parameters`, []);
 
-        const queryParams = parameters.filter((item: any) => item.in === 'query');
-        // body params
-        const bodyParams = parameters.filter((item: any) => item.in === 'body');
-        if (queryParams.length > 0) {
-          bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName, configItem);
-        } else if (bodyParams.length > 0) {
-          bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName, configItem);
+          const queryParams = parameters.filter((item: any) => item.in === 'query');
+          // body params
+          const bodyParams = parameters.filter((item: any) => item.in === 'body');
+          if (queryParams.length > 0) {
+            bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName, configItem);
+          } else if (bodyParams.length > 0) {
+            bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName, configItem);
+          }
+
+          // responses params
+          let response = `${method}.responses.200`;
+          responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
+        } else if (openapi) {
+          let request = `${method}.requestBody.content.application/json`;
+          bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName, configItem);
+
+          let response = `${method}.responses.200.content.*/*`;
+          responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
         }
 
-        // responses params
-        let response = `${method}.responses.200`;
-        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
-      } else if (openapi) {
-        let request = `${method}.requestBody.content.application/json`;
-        bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName, configItem);
-
-        let response = `${method}.responses.200.content.*/*`;
-        responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
-      }
-
-      return {
-        url,
-        summary,
-        bodyParamsType,
-        responsesType,
-        consumes,
-        method,
-        functionName,
-      };
-    });
+        _pathGroup.push({
+          url,
+          summary,
+          bodyParamsType,
+          responsesType,
+          consumes,
+          method,
+          functionName,
+        });
+      });
+    }
 
     ejs.renderFile(
       path.join(__dirname, '../templates/ts/function_service.ejs'),
@@ -268,7 +273,7 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
         request,
         basePath,
         typingFileName,
-        pathGroup,
+        pathGroup: _pathGroup,
         functionNameRule: functionNameRule,
         functionName: '',
       },
