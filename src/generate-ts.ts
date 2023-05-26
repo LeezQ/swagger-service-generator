@@ -109,9 +109,12 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
         bodyParamsType = generateBodyParams(_.get(item, `${request}`), configItem);
         addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
 
-        let response = `${method}.responses.200.content.*/*`;
-        responsesType = generateBodyParams(_.get(item, `${response}`), configItem);
-        addDefinitionData(_.get(item, `${response}.schema.$ref`), _definitionsData, definitions);
+        let response = `${method}.responses.200.content.*/*.schema.schema.$ref`;
+        if (method === 'get') {
+          response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
+        }
+
+        addDefinitionData(_.get(item, `${response}`), _definitionsData, definitions);
       }
 
       pathsData[functionName] = {
@@ -239,19 +242,42 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
           // body params
           const bodyParams = parameters.filter((item: any) => item.in === 'body');
           if (queryParams.length > 0) {
-            bodyParamsType = generateServiceType(queryParams[0], 'QueryParameters', functionName, configItem);
+            bodyParamsType = generateServiceType(
+              _.get(queryParams[0], `schema.$ref`),
+              'QueryParameters',
+              functionName,
+              configItem,
+            );
           } else if (bodyParams.length > 0) {
-            bodyParamsType = generateServiceType(bodyParams[0], 'BodyParameters', functionName, configItem);
+            bodyParamsType = generateServiceType(
+              _.get(bodyParams[0], `schema.$ref`),
+              'BodyParameters',
+              functionName,
+              configItem,
+            );
           }
 
           // responses params
           let response = `${method}.responses.200`;
-          responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
+          responsesType = generateServiceType(
+            _.get(item, `${response}.schema.$ref`),
+            'Responses',
+            functionName,
+            configItem,
+          );
         } else if (openapi) {
           let request = `${method}.requestBody.content.application/json`;
-          bodyParamsType = generateServiceType(_.get(item, `${request}`), 'BodyParameters', functionName, configItem);
+          bodyParamsType = generateServiceType(
+            _.get(item, `${request}.schema.$ref`),
+            'BodyParameters',
+            functionName,
+            configItem,
+          );
 
-          let response = `${method}.responses.200.content.*/*`;
+          let response = `${method}.responses.200.content.*/*.schema.$ref`;
+          if (method === 'get') {
+            response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
+          }
           responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
         }
 

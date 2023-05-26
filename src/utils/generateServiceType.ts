@@ -14,10 +14,9 @@ type TypeSchema = {
   };
 };
 
-export default function generateServiceType(item: any, genType: string, functionName: string, config: any): string {
-  const $ref = _.get(item, `schema.$ref`);
-  if ($ref) {
-    return getTypeFromRef($ref, config);
+export default function generateServiceType(ref: any, genType: string, functionName: string, config: any): string {
+  if (ref) {
+    return getTypeFromRef(ref, config);
   } else {
     return `Paths.${_.upperFirst(functionName)}.${genType}`;
   }

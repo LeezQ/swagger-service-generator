@@ -4,10 +4,9 @@ const tslib_1 = require("tslib");
 const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const refToDefinition_1 = tslib_1.__importDefault(require("./refToDefinition"));
 const replaceX_1 = tslib_1.__importDefault(require("./replaceX"));
-function generateServiceType(item, genType, functionName, config) {
-    const $ref = lodash_1.default.get(item, `schema.$ref`);
-    if ($ref) {
-        return getTypeFromRef($ref, config);
+function generateServiceType(ref, genType, functionName, config) {
+    if (ref) {
+        return getTypeFromRef(ref, config);
     }
     else {
         return `Paths.${lodash_1.default.upperFirst(functionName)}.${genType}`;
