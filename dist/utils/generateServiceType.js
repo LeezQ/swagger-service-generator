@@ -5,7 +5,7 @@ const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const refToDefinition_1 = tslib_1.__importDefault(require("./refToDefinition"));
 const replaceX_1 = tslib_1.__importDefault(require("./replaceX"));
 function generateServiceType(ref, genType, functionName, config) {
-    if (ref) {
+    if (ref && !ref.includes('integer')) {
         return getTypeFromRef(ref, config);
     }
     else {

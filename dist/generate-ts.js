@@ -71,7 +71,7 @@ function generateTsTypes(configItem, res) {
                 queryParamsType = (0, generateQueryParams_1.default)(queryParams, configItem);
                 // body params
                 const bodyParams = parameters.filter((item) => item.in === 'body');
-                bodyParamsType = (0, generateBodyParams_1.default)(bodyParams[0], configItem);
+                bodyParamsType = (0, generateBodyParams_1.default)(bodyParams, configItem);
                 addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
                 // responses params
                 let response = `${method}.responses.200`;
@@ -82,10 +82,8 @@ function generateTsTypes(configItem, res) {
                 let request = `${method}.requestBody.content.application/json`;
                 bodyParamsType = (0, generateBodyParams_1.default)(_.get(item, `${request}`), configItem);
                 addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
-                let response = `${method}.responses.200.content.*/*.schema.schema.$ref`;
-                if (method === 'get') {
-                    response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
-                }
+                // let response = `${method}.responses.200.content.*/*.schema.schema.$ref`;
+                let response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
                 addDefinitionData(_.get(item, `${response}`), _definitionsData, definitions);
             }
             pathsData[functionName] = {
@@ -116,12 +114,17 @@ function generateTsTypes(configItem, res) {
     }
     _.map(_definitionsData, (item, key) => {
         // 递归
-        parseDefinition(item.properties, _definitionsData);
+        if (item) {
+            parseDefinition(item.properties, _definitionsData);
+            // console.log(parseDefinition(item.properties, _definitionsData));
+        }
     });
     let definitionsData = {};
     _.map(_definitionsData, (item, key) => {
         // generate
-        definitionsData[(0, replaceX_1.default)((0, refToDefinition_1.default)(key))] = (0, generateProperties_1.default)(item, configItem);
+        if (item) {
+            definitionsData[(0, replaceX_1.default)((0, refToDefinition_1.default)(key))] = (0, generateProperties_1.default)(item, configItem);
+        }
     });
     ejs_1.default.renderFile(path_1.default.join(__dirname, '../templates/ts/definition.ejs'), {
         configItem,
@@ -192,8 +195,14 @@ function generateTsServices(configItem, res) {
                     if (queryParams.length > 0) {
                         bodyParamsType = (0, generateServiceType_1.default)(_.get(queryParams[0], `schema.$ref`), 'QueryParameters', functionName, configItem);
                     }
-                    else if (bodyParams.length > 0) {
-                        bodyParamsType = (0, generateServiceType_1.default)(_.get(bodyParams[0], `schema.$ref`), 'BodyParameters', functionName, configItem);
+                    if (bodyParams.length > 0) {
+                        if (bodyParamsType === 'any' || method === 'post') {
+                            bodyParamsType = '';
+                        }
+                        else {
+                            bodyParamsType += '&';
+                        }
+                        bodyParamsType += (0, generateServiceType_1.default)(_.get(bodyParams[0], `schema.$ref`), 'BodyParameters', functionName, configItem);
                     }
                     // responses params
                     let response = `${method}.responses.200`;
@@ -202,10 +211,8 @@ function generateTsServices(configItem, res) {
                 else if (openapi) {
                     let request = `${method}.requestBody.content.application/json`;
                     bodyParamsType = (0, generateServiceType_1.default)(_.get(item, `${request}.schema.$ref`), 'BodyParameters', functionName, configItem);
-                    let response = `${method}.responses.200.content.*/*.schema.$ref`;
-                    if (method === 'get') {
-                        response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
-                    }
+                    // let response = `${method}.responses.200.content.*/*.schema.$ref`;
+                    let response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
                     responsesType = (0, generateServiceType_1.default)(_.get(item, `${response}`), 'Responses', functionName, configItem);
                 }
                 _pathGroup.push({

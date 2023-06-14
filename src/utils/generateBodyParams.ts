@@ -16,15 +16,23 @@ type TypeSchema = {
   };
 };
 
-export default function generateBodyParams(
-  element: {
-    name: string;
-    in: string;
-    schema: TypeSchema;
-    descriptiosn: string;
-  },
-  config: any,
-): string {
+type TElement = {
+  name: string;
+  in: string;
+  schema: TypeSchema;
+  description: string;
+};
+
+export default function generateBodyParams(elements: any, config: any): string {
+  if (!elements) return 'any';
+
+  let element;
+
+  if (elements.length > 0) {
+    element = elements[0];
+  } else {
+    element = elements;
+  }
   if (_.get(element, 'schema.properties')) {
     let _type = '{';
     function getP(item: TypeSchema) {
@@ -50,6 +58,20 @@ export default function generateBodyParams(
     getP(element.schema);
     _type += `\n}`;
     return _type;
+  } else if (_.get(element, 'name')) {
+    let _type = `{\n`;
+    for (let i = 0; i < elements.length; i++) {
+      let _e = elements[i];
+      if (_.get(_e, 'schema.$ref')) {
+        _type += `${_e.name}${_e.required ? '' : '?'}: ${getTypeFromRef(_e.schema.$ref, config)} /* ${
+          _e.description
+        } */ \n`;
+      } else {
+        _type += `${_e.name}${_e.required ? '' : '?'}: ${_e.schema.type} /* ${_e.description} */ \n`;
+      }
+    }
+    _type += `}\n`;
+    return _type;
   } else if (_.get(element, 'schema.$ref')) {
     return getTypeFromRef(element.schema.$ref, config);
   }
@@ -61,6 +83,10 @@ function getTypeFromRef(ref?: string, config?: any): string {
 
   if (!ref) {
     return '';
+  }
+
+  if (ref.includes('integer')) {
+    return 'number';
   }
 
   const bodyParamsSchemaRefType = replaceX(refToDefinition(ref));

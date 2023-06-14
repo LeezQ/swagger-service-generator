@@ -15,7 +15,7 @@ type TypeSchema = {
 };
 
 export default function generateServiceType(ref: any, genType: string, functionName: string, config: any): string {
-  if (ref) {
+  if (ref && !ref.includes('integer')) {
     return getTypeFromRef(ref, config);
   } else {
     return `Paths.${_.upperFirst(functionName)}.${genType}`;

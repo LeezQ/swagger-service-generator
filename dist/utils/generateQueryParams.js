@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const convertToTsType_1 = tslib_1.__importDefault(require("./convertToTsType"));
-function generateBodyParams(params, config) {
+function generateQueryParams(params, config) {
     if (params.length === 0) {
         return 'any';
     }
@@ -14,4 +14,4 @@ function generateBodyParams(params, config) {
     x += `\n}`;
     return x;
 }
-exports.default = generateBodyParams;
+exports.default = generateQueryParams;

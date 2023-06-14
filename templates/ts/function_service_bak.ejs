@@ -1,0 +1,22 @@
+// @ts-ignore
+/* eslint-disable */
+/// <reference path = "<%=typingFileName%>" />
+<%- request %>
+<%_ pathGroup.forEach((item) => { _%>
+<%_
+  let { url, summary, bodyParamsType, responsesType, consumes, method, functionName } = item;
+%>
+/**
+* <%-summary%>
+*/
+export async function <%=functionName%>(
+  params?: <%- bodyParamsType%>,
+  <%- url.includes('{') ? 'extra?: {id: string}' : '' -%>
+): Promise<<%=responsesType%>> {
+  // <%= url%>
+  return request(`<%=(basePath === '/' || basePath === '') ? '' : basePath%><%=url.replaceAll('\{', '${extra?.')%>`, {
+    method: '<%=method.toUpperCase()%>',
+    <%=method.toUpperCase() === 'GET' ? 'params': 'data' %> : params,
+  });
+}
+<%_ }) %>

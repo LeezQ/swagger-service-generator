@@ -4,6 +4,8 @@ const tslib_1 = require("tslib");
 const lodash_1 = tslib_1.__importDefault(require("lodash"));
 const convertToTsType_1 = tslib_1.__importDefault(require("./convertToTsType"));
 function generateProperties(item, config) {
+    if (!item)
+        return;
     const { properties } = item;
     let typeRes = ['{\n'];
     lodash_1.default.map(properties, (item, propertyName) => {

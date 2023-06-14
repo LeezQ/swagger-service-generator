@@ -3,7 +3,7 @@
 const { Command } = require('commander');
 const program = new Command();
 
-program.name('liquid-tools').description('CLI to some JavaScript ').version('0.8.0');
+program.name('liquid-tools').description('CLI to some JavaScript ').version('1.3.6');
 
 program
   .command('api-generate')

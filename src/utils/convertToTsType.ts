@@ -9,6 +9,9 @@ const convertToTsType: any = (item: any, config: any) => {
 
   const { type, items, $ref } = item;
   if ($ref) {
+    if ($ref.includes('integer')) {
+      return 'number';
+    }
     return `${definitionsName}.${replaceX(refToDefinition($ref))}`;
   }
   switch (type) {

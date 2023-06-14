@@ -2,7 +2,7 @@ import _ from 'lodash';
 import convertToTsType from './convertToTsType';
 
 export default function generateProperties(
-  item: {
+  item?: {
     type: 'string';
     properties: {
       [key: string]: {
@@ -13,8 +13,9 @@ export default function generateProperties(
       };
     };
   },
-  config: any,
+  config?: any,
 ) {
+  if (!item) return;
   const { properties } = item;
 
   let typeRes = ['{\n'];

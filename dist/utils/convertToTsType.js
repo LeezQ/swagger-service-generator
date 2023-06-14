@@ -8,6 +8,9 @@ const convertToTsType = (item, config) => {
     const { definitionsName = 'Definitions' } = config;
     const { type, items, $ref } = item;
     if ($ref) {
+        if ($ref.includes('integer')) {
+            return 'number';
+        }
         return `${definitionsName}.${(0, replaceX_1.default)((0, refToDefinition_1.default)($ref))}`;
     }
     switch (type) {

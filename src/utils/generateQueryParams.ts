@@ -9,7 +9,7 @@ type TypeProperty = {
   description: string;
 };
 
-export default function generateBodyParams(params: TypeProperty[], config: any) {
+export default function generateQueryParams(params: TypeProperty[], config: any) {
   if (params.length === 0) {
     return 'any';
   }

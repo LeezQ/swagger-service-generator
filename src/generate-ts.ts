@@ -97,7 +97,7 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
 
         // body params
         const bodyParams = parameters.filter((item: any) => item.in === 'body');
-        bodyParamsType = generateBodyParams(bodyParams[0], configItem);
+        bodyParamsType = generateBodyParams(bodyParams, configItem);
         addDefinitionData(_.get(bodyParams, '[0].schema.$ref'), _definitionsData, definitions);
 
         // responses params
@@ -109,10 +109,8 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
         bodyParamsType = generateBodyParams(_.get(item, `${request}`), configItem);
         addDefinitionData(_.get(item, `${request}.schema.$ref`), _definitionsData, definitions);
 
-        let response = `${method}.responses.200.content.*/*.schema.schema.$ref`;
-        if (method === 'get') {
-          response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
-        }
+        // let response = `${method}.responses.200.content.*/*.schema.schema.$ref`;
+        let response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
 
         addDefinitionData(_.get(item, `${response}`), _definitionsData, definitions);
       }
@@ -144,16 +142,20 @@ function generateTsTypes(configItem: any, res: { data?: import('./typing').Swagg
     }
     return _defi;
   }
-
   _.map(_definitionsData, (item: any, key: string) => {
     // 递归
-    parseDefinition(item.properties, _definitionsData);
+    if (item) {
+      parseDefinition(item.properties, _definitionsData);
+      // console.log(parseDefinition(item.properties, _definitionsData));
+    }
   });
 
   let definitionsData: any = {};
   _.map(_definitionsData, (item: any, key: string) => {
     // generate
-    definitionsData[replaceX(refToDefinition(key))] = generateProperties(item, configItem);
+    if (item) {
+      definitionsData[replaceX(refToDefinition(key))] = generateProperties(item, configItem);
+    }
   });
 
   ejs.renderFile(
@@ -248,8 +250,14 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
               functionName,
               configItem,
             );
-          } else if (bodyParams.length > 0) {
-            bodyParamsType = generateServiceType(
+          }
+          if (bodyParams.length > 0) {
+            if (bodyParamsType === 'any' || method === 'post') {
+              bodyParamsType = '';
+            } else {
+              bodyParamsType += '&';
+            }
+            bodyParamsType += generateServiceType(
               _.get(bodyParams[0], `schema.$ref`),
               'BodyParameters',
               functionName,
@@ -274,10 +282,9 @@ function generateTsServices(configItem: any, res: { data?: import('./typing').Sw
             configItem,
           );
 
-          let response = `${method}.responses.200.content.*/*.schema.$ref`;
-          if (method === 'get') {
-            response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
-          }
+          // let response = `${method}.responses.200.content.*/*.schema.$ref`;
+          let response = `${method}.responses.default.content.application/json.schema.allOf[1].properties.data.$ref`;
+
           responsesType = generateServiceType(_.get(item, `${response}`), 'Responses', functionName, configItem);
         }
 
